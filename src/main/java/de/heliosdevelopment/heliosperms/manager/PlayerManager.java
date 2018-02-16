@@ -19,14 +19,14 @@ public class PlayerManager {
         this.groupManager = groupManager;
     }
 
-    public PermissionPlayer loadPlayer(UUID uuid, String name) {
+    public PermissionPlayer loadPlayer(UUID uuid, String name, boolean bungee) {
         String expiration = mysql.getExpiration(uuid.toString()) == null ? String.valueOf(-1) : mysql.getExpiration(uuid.toString());
         PermissionPlayer permissionPlayer = new PermissionPlayer(uuid,
                 groupManager.getGroup(mysql.getGroup(uuid.toString())),
                 mysql.getPermissions(uuid.toString(), PermissionType.USER),
                 Long.valueOf(expiration));
         players.add(permissionPlayer);
-        if (mysql.getGroup(uuid.toString()) == -1)
+        if (mysql.getGroup(uuid.toString()) == -1 && bungee)
             mysql.addUser(uuid.toString(), name, 20, (long) -1);
         System.out.println(permissionPlayer.getPermissionGroup().getName());
         return permissionPlayer;

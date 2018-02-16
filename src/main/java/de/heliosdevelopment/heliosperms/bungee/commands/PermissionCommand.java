@@ -33,13 +33,14 @@ public class PermissionCommand extends Command {
     }
 
     /*
-     * perms user (name) setgroup (group)
+     * perms user (name) setgroup (group) (duration) <-- Zeit in Tagen
      * perms user (name) getGroup
      * perms user (name) addpermission  (permission)
      * perms user (name) removepermission (permission)
      * perms user (name) list
      *
      * perms groups
+     * perms addgroup (id) (name) (chatColor) (prefix) (parentGroup)
      * perms group (name) add (permission)
      * perms group (name) remove (permission)
      * perms group (name) list
@@ -65,6 +66,8 @@ public class PermissionCommand extends Command {
                 sendMessage(sender, "§e/perms group (name) list", false);
                 sendMessage(sender, "§e/perms group (name) users", false);
             } else if (args[0].equalsIgnoreCase("groups")) {
+                if (playerManager.getGroupManager().getGroups().size() == 0)
+                    sendMessage(sender, "§cKonnte keine Gruppe finden.", true);
                 for (PermissionGroup group : playerManager.getGroupManager().getGroups())
                     sendMessage(sender, "§e" + group.getName(), false);
             } else if (args[0].equalsIgnoreCase("test")) {
@@ -146,6 +149,7 @@ public class PermissionCommand extends Command {
                     if (!mysql.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
                         mysql.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
+                        sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
                     }
                 } else if (args[2].equalsIgnoreCase("remove")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
@@ -156,13 +160,14 @@ public class PermissionCommand extends Command {
                     if (mysql.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
                         mysql.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
+                        sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich entfernt.", true);
                     }
                 }
             } else if (args[0].equalsIgnoreCase("group")) {
                 if (args[2].equalsIgnoreCase("add")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
                     if (group == null) {
-                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
                     if (!mysql.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {

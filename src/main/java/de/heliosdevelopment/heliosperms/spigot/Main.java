@@ -25,7 +25,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        File file = new File("../../../permissionconfig.yml");
+        File file = new File(getDataFolder(), "config.yml");
         if (!file.exists())
             try {
                 file.createNewFile();
@@ -65,7 +65,6 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         mysql.close();
         for (Player p : Bukkit.getOnlinePlayers()) {
-
         }
     }
 

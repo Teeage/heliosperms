@@ -20,11 +20,22 @@ import java.io.IOException;
 public class Main extends Plugin {
     private MySQL mysql;
     private static Main instance;
+    private String administrator;
 
     @Override
     public void onEnable() {
         instance = this;
-        File file = new File("../../../permissionconfig.yml");
+        File folder = new File("plugins//HeliosPerms");
+        File file = new File(folder, "config.yml");
+        if (!folder.exists())
+            folder.mkdirs();
+        if (!file.exists())
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         Configuration cfg = null;
         if (!file.exists())
             try {
@@ -48,19 +59,21 @@ public class Main extends Plugin {
             cfg.set("mysql.user", "user");
         if (!cfg.contains("mysql.password"))
             cfg.set("mysql.password", "password");
+        if (!cfg.contains("settings.administrator"))
+            cfg.set("settings.administrator", "HierDeinenMinecraftNamenEintragen");
         try {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(cfg, file);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        administrator = cfg.getString("settings.administrator");
         mysql = new MySQL(cfg.getString("mysql.host"), cfg.getString("mysql.port"), cfg.getString("mysql.database")
                 , cfg.getString("mysql.user"), cfg.getString("mysql.password"));
         GroupManager groupManager = new GroupManager(mysql);
         PlayerManager playerManager = new PlayerManager(mysql, groupManager);
         new HeliosPerms(mysql, playerManager);
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager));
+        ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager, mysql));
         ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionListener(playerManager));
         getProxy().getPluginManager().registerCommand(this, new PermissionCommand(mysql, playerManager));
         new ExpirationHandler(playerManager);
@@ -81,4 +94,7 @@ public class Main extends Plugin {
         return mysql;
     }
 
+    public String getAdministrator() {
+        return administrator;
+    }
 }
