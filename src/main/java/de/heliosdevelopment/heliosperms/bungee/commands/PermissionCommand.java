@@ -35,8 +35,8 @@ public class PermissionCommand extends Command {
     /*
      * perms user (name) setgroup (group) (duration) <-- Zeit in Tagen
      * perms user (name) getGroup
-     * perms user (name) addpermission  (permission)
-     * perms user (name) removepermission (permission)
+     * perms user (name) add  (permission)
+     * perms user (name) remove (permission)
      * perms user (name) list
      *
      * perms groups
@@ -56,11 +56,12 @@ public class PermissionCommand extends Command {
             if (args[0].equalsIgnoreCase("help")) {
                 sendMessage(sender, "§e/perms user (name) setgroup (group) (duration)", false);
                 sendMessage(sender, "§e/perms user (name) getgroup", false);
-                sendMessage(sender, "§e/perms user (name) addpermission (permission)", false);
-                sendMessage(sender, "§e/perms user (name) removepermission (permission)", false);
+                sendMessage(sender, "§e/perms user (name) add (permission)", false);
+                sendMessage(sender, "§e/perms user (name) remove (permission)", false);
                 sendMessage(sender, "§e/perms user (name) list", false);
                 sendMessage(sender, "§e/perms groups", false);
-                sendMessage(sender, "§e/perms addgroup (id) (name) (chatColor) (prefix) (parent)", false);
+                sendMessage(sender, "§e/perms addgroup (id) (name) (chatColor) (prefix) (parentGroupId)", false);
+                sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20§7\"", false);
                 sendMessage(sender, "§e/perms group (name) add (permission)", false);
                 sendMessage(sender, "§e/perms group (name) remove (permission)", false);
                 sendMessage(sender, "§e/perms group (name) list", false);
@@ -92,7 +93,7 @@ public class PermissionCommand extends Command {
                         if (player.getPermissionGroup() != null) {
                             sendMessage(sender,
                                     "§7Der Spieler ist in der Gruppe " + player.getPermissionGroup().getColorCode()
-                                            + player.getPermissionGroup().getGroupId(), true);
+                                            + player.getPermissionGroup().getName(), true);
 
                             sendMessage(sender, "§7Er besitzt sie noch " + PunishUnit.getRemainingTime(player.getExpiration()), true);
                         }
@@ -177,18 +178,18 @@ public class PermissionCommand extends Command {
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
                     }
 
-                }
-            } else if (args[2].equalsIgnoreCase("remove")) {
-                PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
-                if (group == null) {
-                    sendMessage(sender, "§cGruppe existiert nicht.", true);
-                    return;
-                }
-                if (mysql.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
-                    mysql.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
-                    sendMessage(sender, "§aPermission wurde entfernt.", true);
-                    playerManager.getGroupManager().updatePermissions();
-                    BungeeUpdater.updatePermissions(PermissionType.GROUP);
+                } else if (args[2].equalsIgnoreCase("remove")) {
+                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
+                    if (group == null) {
+                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        return;
+                    }
+                    if (mysql.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
+                        mysql.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
+                        sendMessage(sender, "§aPermission wurde entfernt.", true);
+                        playerManager.getGroupManager().updatePermissions();
+                        BungeeUpdater.updatePermissions(PermissionType.GROUP);
+                    }
                 }
             }
         } else if (args.length == 5) {

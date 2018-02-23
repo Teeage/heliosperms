@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import net.md_5.bungee.api.ProxyServer;
@@ -13,7 +14,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BungeeUpdater {
 
     public static void updateGroup(String uuid, Integer groupId) {
-        ArrayList<ServerInfo> servers = new ArrayList<>();
+        List<ServerInfo> servers = new ArrayList<>();
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             if (!servers.contains(p.getServer().getInfo()))
                 servers.add(p.getServer().getInfo());
@@ -33,7 +34,7 @@ public class BungeeUpdater {
     }
 
     public static void updatePermissions(PermissionType type) {
-        ArrayList<ServerInfo> servers = new ArrayList<>();
+        List<ServerInfo> servers = new ArrayList<>();
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             if (!servers.contains(p.getServer().getInfo()))
                 servers.add(p.getServer().getInfo());

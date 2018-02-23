@@ -8,6 +8,7 @@ import java.util.UUID;
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
 import de.heliosdevelopment.heliosperms.spigot.listener.PlayerListener;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
@@ -56,9 +57,13 @@ public class Main extends JavaPlugin {
         GroupManager groupManager = new GroupManager(mysql);
         PlayerManager playerManager = new PlayerManager(mysql, groupManager);
         new HeliosPerms(mysql, playerManager);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener());
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener(playerManager));
         Bukkit.getPluginManager().registerEvents(new PlayerListener(playerManager), this);
         HeliosPerms.setBungee(false);
+
+        for(Player player : Bukkit.getOnlinePlayers()){
+            playerManager.loadPlayer(player.getUniqueId(), player.getName(), false);
+        }
     }
 
     @Override
