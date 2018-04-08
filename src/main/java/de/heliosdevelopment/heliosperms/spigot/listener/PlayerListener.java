@@ -9,6 +9,7 @@ import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,33 +28,35 @@ import java.lang.reflect.Field;
 
 public class PlayerListener implements Listener {
 
-    private PlayerManager playerManager;
-    private boolean coloredTabList = true;
-    private boolean coleredChat = true;
+    private final PlayerManager playerManager;
+    private final boolean coloredTabList;
+    private final boolean coloredChat;
+    private final String tablistFormat;
+    private final String chatFormat;
 
-    public PlayerListener(PlayerManager playerManager) {
+
+    public PlayerListener(PlayerManager playerManager, boolean coloredTabList, boolean coloredChat, String tablistFormat, String chatFormat) {
         this.playerManager = playerManager;
+        this.coloredTabList = coloredTabList;
+        this.coloredChat = coloredChat;
+        this.tablistFormat = tablistFormat;
+        this.chatFormat = chatFormat;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         PermissionPlayer permissionPlayer = playerManager.loadPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName(), false);
-        new BukkitRunnable() {
+        if (permissionPlayer == null) return;
 
-            @Override
-            public void run() {
-                if (permissionPlayer == null) return;
-
-                try {
-                    Field field = Class.forName("org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity").getDeclaredField("perm");
-                    field.setAccessible(true);
-                    field.set(event.getPlayer(), new Permissible(event.getPlayer(), permissionPlayer));
-                } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                setPrefix(event.getPlayer());
-            }
-        }.runTaskLater(Main.getInstance(), 30);
+        try {
+            String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+            Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
+            field.setAccessible(true);
+            field.set(event.getPlayer(), new Permissible(event.getPlayer(), permissionPlayer));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        setPrefix(event.getPlayer());
     }
 
     @EventHandler
@@ -68,11 +71,22 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (!coleredChat) return;
+        if (!coloredChat) return;
         Player player = e.getPlayer();
         PermissionGroup group = playerManager.getPlayer(player.getUniqueId()).getPermissionGroup();
-        String prefix = group.getColorCode() + group.getName();
-        e.setFormat(prefix + " §8┃ §7" + player.getName() + " §e»§f " + "%2$s");
+        if (group == null)
+            return;
+        String format = chatFormat;
+        format = ChatColor.translateAlternateColorCodes('&', format);
+        if (format.contains("%colorCode%"))
+            format = format.replace("%colorCode%", group.getColorCode());
+        if (format.contains("%prefix%"))
+            format = format.replace("%prefix%", group.getPrefix());
+        if (format.contains("%name%"))
+            format = format.replace("%name%", group.getName());
+        if (format.contains("%player%"))
+            format = format.replace("%player%", player.getName());
+        e.setFormat(format + " %2$s");
         if (player.hasPermission("heliosperms.chatcolor"))
             e.setMessage(e.getMessage().replace("&", "§"));
 
@@ -92,13 +106,16 @@ public class PlayerListener implements Listener {
 
     private void setPrefix(Player p) {
         if (!coloredTabList) return;
-        Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
+        Scoreboard board = p.getScoreboard();
+        if (board == null)
+            Bukkit.getScoreboardManager().getNewScoreboard();
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             PermissionGroup group = playerManager.getPlayer(player.getUniqueId()).getPermissionGroup();
             Team color = board.getTeam(Integer.valueOf(group.getGroupId()).toString());
             if (color == null) {
                 color = board.registerNewTeam(Integer.valueOf(group.getGroupId()).toString());
-                color.setPrefix(group.getColorCode());
+                color.setPrefix(getPrefix(group));
             }
             color.addEntry(player.getName());
         }
@@ -109,7 +126,7 @@ public class PlayerListener implements Listener {
             Team color = board1.getTeam(Integer.valueOf(group.getGroupId()).toString());
             if (color == null) {
                 color = board1.registerNewTeam(Integer.valueOf(group.getGroupId()).toString());
-                color.setPrefix(group.getColorCode());
+                color.setPrefix(getPrefix(group));
             }
             //┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃
             color.addEntry(p.getName());
@@ -117,6 +134,25 @@ public class PlayerListener implements Listener {
         }
 
         p.setScoreboard(board);
+    }
+
+    private String getPrefix(PermissionGroup group) {
+        String prefix = tablistFormat;
+        prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+        if (prefix.contains("%colorCode%"))
+            prefix = prefix.replace("%colorCode%", group.getColorCode());
+        if (prefix.contains("%prefix%"))
+            prefix = prefix.replace("%prefix%", group.getPrefix());
+        if (prefix.contains("%name%"))
+            prefix = prefix.replace("%name%", group.getName());
+        if (prefix.contains("%player%"))
+            prefix = prefix.replace("%player%", "");
+        if (prefix.length() > 16) {
+            System.out.println("[HeliosPerms] Du darfst bei Bukkit die Zeichen Länge von 16 Zeichen nicht überschreiten!");
+            System.out.println(prefix);
+            prefix = group.getColorCode();
+        }
+        return prefix;
     }
 
 }

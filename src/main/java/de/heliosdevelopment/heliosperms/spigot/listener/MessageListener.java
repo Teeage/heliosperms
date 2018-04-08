@@ -51,10 +51,10 @@ public class MessageListener implements PluginMessageListener {
 
 
                         try {
-                            Field field = Class.forName("org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity").getDeclaredField("perm");
+                            Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
                             field.setAccessible(true);
                             field.set(onlinePlayer, new Permissible(onlinePlayer, permissionPlayer));
-                        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
                     }

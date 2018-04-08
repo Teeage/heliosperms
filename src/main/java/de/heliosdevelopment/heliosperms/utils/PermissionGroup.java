@@ -43,7 +43,7 @@ public class PermissionGroup {
     }
 
     public List<String> getAllPermissions() {
-        ArrayList<String> permissions = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
         permissions.addAll(this.permissions);
         if (parentGroup != -31) {
             PermissionGroup permissionGroup = HeliosPerms.getGroupManager().getGroup(parentGroup);

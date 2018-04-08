@@ -75,6 +75,26 @@ public class PermissionCommand extends Command {
                 for (String s : sender.getPermissions())
                     sendMessage(sender, s, true);
             }
+        /*} else if (args.length == 2) {
+            if (args[2].equalsIgnoreCase("deleteGroup")) {
+                int groupId = -1;
+                try {
+                    groupId = Integer.valueOf(args[1]);
+                } catch (NumberFormatException exception) {
+                    sendMessage(sender, "§7Ist das eine Zahl? Näh oder?", true);
+                }
+                if (groupId == -1)
+                    return;
+                if (playerManager.getGroupManager().getGroup(groupId) != null) {
+                    for(PermissionGroup group : playerManager.getGroupManager().getGroups()){
+                        if(group.getParentGroup()==groupId){
+                            sendMessage(sender, "§cGruppe kann nicht gelöscht werden, da eine andere Gruppe von ihr erbt.", true);
+                            return;
+                        }
+                    }
+
+                }
+            }*/
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("user")) {
                 if (args[2].equalsIgnoreCase("list")) {
@@ -151,7 +171,8 @@ public class PermissionCommand extends Command {
                         mysql.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
-                    }
+                    }else
+                        sendMessage(sender, "§cPermission existiert bereits.", true);
                 } else if (args[2].equalsIgnoreCase("remove")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target == null) {
@@ -176,7 +197,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§aPermission wurde gesetzt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
-                    }
+                    }else
+                        sendMessage(sender, "§cPermission existiert bereits.", true);
 
                 } else if (args[2].equalsIgnoreCase("remove")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
@@ -224,10 +246,8 @@ public class PermissionCommand extends Command {
                     }
                     ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(UUID.fromString(uuid));
                     if (proxiedPlayer != null) {
-                        // BungeeUpdater.updatePermissions(proxiedPlayer);
                         BungeeUpdater.updateGroup(uuid, group.getGroupId());
                     }
-                    //ProxyServer.getInstance().getPluginManager().callEvent(new GroupChangeEvent(UUID.fromString(uuid), group.getGroupId()));
                     sendMessage(sender, "§aDie Gruppe von §e"
                             + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
                 }
