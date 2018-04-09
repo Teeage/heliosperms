@@ -106,9 +106,8 @@ public class PlayerListener implements Listener {
 
     private void setPrefix(Player p) {
         if (!coloredTabList) return;
+        p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         Scoreboard board = p.getScoreboard();
-        if (board == null)
-            Bukkit.getScoreboardManager().getNewScoreboard();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             PermissionGroup group = playerManager.getPlayer(player.getUniqueId()).getPermissionGroup();
