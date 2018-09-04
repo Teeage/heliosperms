@@ -15,7 +15,7 @@ public class PermissionPlayer {
     public PermissionPlayer(UUID uuid, PermissionGroup permissionGroup, List<String> permissions, long expiration) {
         this.uuid = uuid;
         if (permissionGroup == null)
-            this.permissionGroup = HeliosPerms.getGroupManager().getGroup(20);
+            this.permissionGroup = HeliosPerms.getInstance().getGroupManager().getGroup(20);
         else
             this.permissionGroup = permissionGroup;
         this.permissions = permissions;

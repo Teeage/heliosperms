@@ -1,7 +1,6 @@
 package de.heliosdevelopment.heliosperms.spigot.listener;
 
 
-import de.heliosdevelopment.heliosperms.HeliosPerms;
 import de.heliosdevelopment.heliosperms.events.GroupChangeEvent;
 import de.heliosdevelopment.heliosperms.spigot.Main;
 import de.heliosdevelopment.heliosperms.utils.Permissible;
@@ -18,9 +17,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.permissions.PermissibleBase;
-import org.bukkit.permissions.Permission;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -149,6 +145,7 @@ public class PlayerListener implements Listener {
         if (prefix.length() > 16) {
             System.out.println("[HeliosPerms] Du darfst bei Bukkit die Zeichen Länge von 16 Zeichen nicht überschreiten!");
             System.out.println(prefix);
+            System.out.println("[HeliosPerms] Aktuell ist der Prefix " + prefix.length() + " Zeichen lang.");
             prefix = group.getColorCode();
         }
         return prefix;

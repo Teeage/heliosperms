@@ -1,14 +1,11 @@
 package de.heliosdevelopment.heliosperms.spigot;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
 import de.heliosdevelopment.heliosperms.spigot.listener.PlayerListener;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
@@ -21,7 +18,6 @@ import de.heliosdevelopment.heliosperms.spigot.listener.MessageListener;
 public class Main extends JavaPlugin {
     private MySQL mysql;
     private static Main instance;
-    public static final HashMap<UUID, PermissionAttachment> perms = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -55,10 +51,9 @@ public class Main extends JavaPlugin {
 
         GroupManager groupManager = new GroupManager(mysql);
         PlayerManager playerManager = new PlayerManager(mysql, groupManager);
-        new HeliosPerms(mysql, playerManager);
+        new HeliosPerms(mysql, playerManager, false);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener(playerManager));
         Bukkit.getPluginManager().registerEvents(new PlayerListener(playerManager, getConfig().getBoolean("settings.tablist.active"), getConfig().getBoolean("settings.chat.active"), getConfig().getString("settings.tablist.format"), getConfig().getString("settings.chat.format")), this);
-        HeliosPerms.setBungee(false);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             playerManager.loadPlayer(player.getUniqueId(), player.getName(), false);

@@ -74,14 +74,14 @@ public class MySQL {
                 + ",`permission` VARCHAR(99) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         /*
          * GroupID, Permission UUID, Permission
-		 * 
-		 * Users UUID, GroupID
-		 * 
-		 * Groups GroupID, Name, ColorCode, Prefix, parentGroup
-		 * 
-		 * 
-		 * 
-		 */
+         *
+         * Users UUID, GroupID
+         *
+         * Groups GroupID, Name, ColorCode, Prefix, parentGroup
+         *
+         *
+         *
+         */
 
     }
 
@@ -260,7 +260,7 @@ public class MySQL {
         try {
             ResultSet result = select("SELECT `uuid` FROM `users` WHERE `name`='" + name + "'");
             assert result != null;
-            while (result.next()) {
+            if(result.next()){
                 return result.getString("uuid");
             }
         } catch (SQLException e) {
@@ -269,4 +269,7 @@ public class MySQL {
         return null;
     }
 
+    public void updateGroup(int groupId, String key, String value) {
+        updateSQL("UPDATE `groups` SET `" + key + "`='" + value + "' WHERE `groupId`='" + groupId + "'");
+    }
 }

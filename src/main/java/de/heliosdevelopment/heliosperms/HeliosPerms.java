@@ -8,17 +8,25 @@ import de.heliosdevelopment.heliosperms.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.utils.*;
 
 public class HeliosPerms {
-    private static MySQL connection;
-    private static Boolean isBungee = false;
-    private static PlayerManager playerManager;
+    private static HeliosPerms instance;
+    private final MySQL connection;
+    private final boolean isBungee;
+    private final PlayerManager playerManager;
 
-    public HeliosPerms(MySQL con, PlayerManager playerManager) {
-        HeliosPerms.connection = con;
-        HeliosPerms.playerManager = playerManager;
+    public HeliosPerms(MySQL connection, PlayerManager playerManager, boolean isBungee) {
+        instance = this;
+        this.connection = connection;
+        this.playerManager = playerManager;
+        this.isBungee = isBungee;
     }
 
-    public static void setBungee(Boolean isBungee) {
-        HeliosPerms.isBungee = isBungee;
+
+    public static HeliosPerms getInstance() {
+        return instance;
+    }
+
+    public Boolean getIsBungee() {
+        return isBungee;
     }
 
     /**
@@ -28,7 +36,7 @@ public class HeliosPerms {
      * @param uuid the uuid of the player
      * @return List with the permissions
      */
-    public static List<String> getPlayerPermissions(UUID uuid) {
+    public List<String> getPlayerPermissions(UUID uuid) {
         return connection.getPermissions(uuid.toString(), PermissionType.USER);
     }
 
@@ -38,7 +46,7 @@ public class HeliosPerms {
      * @param uuid the uuid of the player
      * @return group of the player
      */
-    public static PermissionGroup getGroup(UUID uuid) {
+    public PermissionGroup getGroup(UUID uuid) {
         PermissionPlayer player = playerManager.getPlayer(uuid);
         if (player != null)
             return player.getPermissionGroup();
@@ -53,28 +61,18 @@ public class HeliosPerms {
      * @param name of the group
      * @return String with color and name of the group
      */
-    public static String getGroupName(String name) {
+    public String getGroupName(String name) {
         PermissionGroup group = playerManager.getGroupManager().getGroup(name);
         if (group != null)
             return group.getColorCode() + group.getName();
         return "";
     }
 
-    /**
-     * Check if a player is online by name
-     *
-     * @param uuid of the player
-     * @return Boolean
-     */
-    public static boolean isOnline(UUID uuid) {
-        return playerManager.getPlayer(uuid) != null;
-    }
-
-    public static GroupManager getGroupManager() {
+    public GroupManager getGroupManager() {
         return playerManager.getGroupManager();
     }
 
-    public static PlayerManager getPlayerManager() {
+    public PlayerManager getPlayerManager() {
         return playerManager;
     }
 }

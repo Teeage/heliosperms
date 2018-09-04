@@ -11,8 +11,8 @@ public class PermissionGroup {
     private final int groupId;
     private final String name;
     private final String prefix, colorCode;
-    private final int parentGroup;
-    private List<String> permissions = new ArrayList<>();
+    private int parentGroup;
+    private List<String> permissions;
 
     public PermissionGroup(int groupId, String name, String prefix, String colorCode, int parentGroup, List<String> permissions) {
         this.groupId = groupId;
@@ -46,7 +46,7 @@ public class PermissionGroup {
         List<String> permissions = new ArrayList<>();
         permissions.addAll(this.permissions);
         if (parentGroup != -31) {
-            PermissionGroup permissionGroup = HeliosPerms.getGroupManager().getGroup(parentGroup);
+            PermissionGroup permissionGroup = HeliosPerms.getInstance().getGroupManager().getGroup(parentGroup);
             if (permissionGroup != null)
                 permissions.addAll(permissionGroup.getAllPermissions());
         }
@@ -55,7 +55,7 @@ public class PermissionGroup {
 
     public List<String> getParentPermissions() {
         if (parentGroup != -31) {
-            PermissionGroup permissionGroup = HeliosPerms.getGroupManager().getGroup(parentGroup);
+            PermissionGroup permissionGroup = HeliosPerms.getInstance().getGroupManager().getGroup(parentGroup);
             if (permissionGroup != null)
                 return permissionGroup.getAllPermissions();
         }
@@ -72,5 +72,9 @@ public class PermissionGroup {
 
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
+    }
+
+    public void setParentGroup(int parentGroup) {
+        this.parentGroup = parentGroup;
     }
 }

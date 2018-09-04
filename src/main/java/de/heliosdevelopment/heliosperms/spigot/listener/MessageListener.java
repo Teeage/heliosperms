@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class MessageListener implements PluginMessageListener {
 
-    private PlayerManager playerManager;
+    private final PlayerManager playerManager;
 
     public MessageListener(PlayerManager playerManager) {
         this.playerManager = playerManager;
@@ -40,9 +40,9 @@ public class MessageListener implements PluginMessageListener {
                 if (subchannel.equals("UpdatePermissions")) {
                     PermissionType type = PermissionType.valueOf(in.readUTF().toUpperCase());
                     if (type == PermissionType.GROUP)
-                        HeliosPerms.getGroupManager().updatePermissions();
+                        HeliosPerms.getInstance().getGroupManager().updatePermissions();
                     else
-                        HeliosPerms.getPlayerManager().updatePermissions();
+                        HeliosPerms.getInstance().getPlayerManager().updatePermissions();
 
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         PermissionPlayer permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());

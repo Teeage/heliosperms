@@ -25,7 +25,7 @@ public class BungeeListener implements Listener {
         PermissionPlayer permissionPlayer = playerManager.loadPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName(), true);
         if (Main.getInstance().getAdministrator().equalsIgnoreCase(event.getPlayer().getName())) {
             permissionPlayer.setPermissionGroup(playerManager.getGroupManager().getGroup(1));
-            mysql.updateUser(event.getPlayer().getUniqueId().toString(), Main.getInstance().getAdministrator(), 1, Long.valueOf(-1));
+            mysql.updateUser(event.getPlayer().getUniqueId().toString(), Main.getInstance().getAdministrator(), 1, (long) -1);
         }
     }
 

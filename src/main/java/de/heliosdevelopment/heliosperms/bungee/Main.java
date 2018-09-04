@@ -72,13 +72,12 @@ public class Main extends Plugin {
                 , cfg.getString("mysql.user"), cfg.getString("mysql.password"));
         GroupManager groupManager = new GroupManager(mysql);
         PlayerManager playerManager = new PlayerManager(mysql, groupManager);
-        new HeliosPerms(mysql, playerManager);
+        new HeliosPerms(mysql, playerManager, true);
         ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager, mysql));
         ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionListener(playerManager));
         getProxy().getPluginManager().registerCommand(this, new PermissionCommand(mysql, playerManager));
         new ExpirationHandler(playerManager);
         getProxy().registerChannel("HeliosPerms");
-        HeliosPerms.setBungee(true);
     }
 
     @Override

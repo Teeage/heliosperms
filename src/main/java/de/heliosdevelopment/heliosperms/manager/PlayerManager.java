@@ -1,6 +1,7 @@
 package de.heliosdevelopment.heliosperms.manager;
 
 import de.heliosdevelopment.heliosperms.MySQL;
+import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 public class PlayerManager {
 
-    private List<PermissionPlayer> players = new ArrayList<>();
+    private final List<PermissionPlayer> players = new ArrayList<>();
     private final MySQL mysql;
     private final GroupManager groupManager;
 
@@ -21,8 +22,9 @@ public class PlayerManager {
 
     public PermissionPlayer loadPlayer(UUID uuid, String name, boolean bungee) {
         String expiration = mysql.getExpiration(uuid.toString()) == null ? String.valueOf(-1) : mysql.getExpiration(uuid.toString());
+         PermissionGroup group =  groupManager.getGroup(mysql.getGroup(uuid.toString()));
         PermissionPlayer permissionPlayer = new PermissionPlayer(uuid,
-                groupManager.getGroup(mysql.getGroup(uuid.toString())),
+               group != null ? group : groupManager.getDefaultGroup(),
                 mysql.getPermissions(uuid.toString(), PermissionType.USER),
                 Long.valueOf(expiration));
         players.add(permissionPlayer);

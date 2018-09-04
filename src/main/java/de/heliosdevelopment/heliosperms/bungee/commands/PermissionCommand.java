@@ -1,6 +1,5 @@
 package de.heliosdevelopment.heliosperms.bungee.commands;
 
-import de.heliosdevelopment.heliosperms.HeliosPerms;
 import de.heliosdevelopment.heliosperms.MySQL;
 import de.heliosdevelopment.heliosperms.bungee.Main;
 import de.heliosdevelopment.heliosperms.manager.BungeeUpdater;
@@ -8,23 +7,21 @@ import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.utils.PunishUnit;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class PermissionCommand extends Command {
 
     private final MySQL mysql;
-    private PlayerManager playerManager;
+    private final PlayerManager playerManager;
 
     public PermissionCommand(MySQL mysql, PlayerManager playerManager) {
         super("hperms", "", "heliosperms", "perms", "rank");
@@ -41,10 +38,13 @@ public class PermissionCommand extends Command {
      *
      * perms groups
      * perms addgroup (id) (name) (chatColor) (prefix) (parentGroup)
+     * perms deletegroup (id)
      * perms group (name) add (permission)
      * perms group (name) remove (permission)
      * perms group (name) list
      * perms group (name) users
+     *perms deletegroup (id)
+     * perms group (name) edit (key) (value)
      */
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -52,6 +52,7 @@ public class PermissionCommand extends Command {
             return;
         if (args.length == 0) {
             sendMessage(sender, "§eHeliosPerms §7v" + Main.getInstance().getDescription().getVersion() + " by §eTeeage.", true);
+            sendMessage(sender, "§eMit /heliosperms help kannst du die Hilfe aufrufen.", true);
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("help")) {
                 sendMessage(sender, "§e/perms user (name) setgroup (group) (duration)", false);
@@ -60,48 +61,57 @@ public class PermissionCommand extends Command {
                 sendMessage(sender, "§e/perms user (name) remove (permission)", false);
                 sendMessage(sender, "§e/perms user (name) list", false);
                 sendMessage(sender, "§e/perms groups", false);
-                sendMessage(sender, "§e/perms addgroup (id) (name) (chatColor) (prefix) (parentGroupId)", false);
+                sendMessage(sender, "§e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)", false);
                 sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20§7\"", false);
+                sendMessage(sender, "§e/perms deleteGroup (id)", false);
                 sendMessage(sender, "§e/perms group (name) add (permission)", false);
                 sendMessage(sender, "§e/perms group (name) remove (permission)", false);
                 sendMessage(sender, "§e/perms group (name) list", false);
                 sendMessage(sender, "§e/perms group (name) users", false);
+                sendMessage(sender, "§e/perms group (name) edit (key) (value)", false);
             } else if (args[0].equalsIgnoreCase("groups")) {
                 if (playerManager.getGroupManager().getGroups().size() == 0)
                     sendMessage(sender, "§cKonnte keine Gruppe finden.", true);
+                sendMessage(sender, "§7Es existieren folgende Gruppen:", true);
                 for (PermissionGroup group : playerManager.getGroupManager().getGroups())
-                    sendMessage(sender, "§e" + group.getName(), false);
-            } else if (args[0].equalsIgnoreCase("test")) {
-                for (String s : sender.getPermissions())
-                    sendMessage(sender, s, true);
+                    sendMessage(sender, "§7- " + group.getColorCode() + group.getName(), false);
             }
-        /*} else if (args.length == 2) {
-            if (args[2].equalsIgnoreCase("deleteGroup")) {
+        } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("deleteGroup")) {
                 int groupId = -1;
                 try {
                     groupId = Integer.valueOf(args[1]);
                 } catch (NumberFormatException exception) {
-                    sendMessage(sender, "§7Ist das eine Zahl? Näh oder?", true);
+                    sendMessage(sender, "§7Bitte gebe eine Zahl an.", true);
                 }
                 if (groupId == -1)
                     return;
-                if (playerManager.getGroupManager().getGroup(groupId) != null) {
-                    for(PermissionGroup group : playerManager.getGroupManager().getGroups()){
-                        if(group.getParentGroup()==groupId){
-                            sendMessage(sender, "§cGruppe kann nicht gelöscht werden, da eine andere Gruppe von ihr erbt.", true);
-                            return;
+                PermissionGroup permissionGroup = playerManager.getGroupManager().getGroup(groupId);
+                if (permissionGroup != null) {
+                    for (PermissionGroup group : playerManager.getGroupManager().getGroups()) {
+                        if (group.getParentGroup() == groupId) {
+                            PermissionGroup parent = playerManager.getGroupManager().getGroup(group.getParentGroup());
+                            group.setParentGroup(parent != null ? parent.getParentGroup() : -31);
                         }
                     }
+                    if (playerManager.getGroupManager().removeGroup(permissionGroup))
+                        sendMessage(sender, "§7Du hast die Gruppe §a" + permissionGroup.getName() + " §7entfernt.", true);
+                    else {
+                        sendMessage(sender, "§7Du kannst die default Gruppe nicht entfernen.", true);
+                        sendMessage(sender, "§7Du kannst sie jedoch mit /perms group (name) §7edit (key) §7(value) §7bearbeiten.", true);
+                    }
 
-                }
-            }*/
+                } else
+                    sendMessage(sender, "§cDie Gruppe existiert nicht!", true);
+            }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("user")) {
                 if (args[2].equalsIgnoreCase("list")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target == null) return;
+                    sendMessage(sender, "§7Die Permissions von §a" + target.getName() + " §7:", true);
                     for (String s : mysql.getPermissions(target.getUniqueId().toString(), PermissionType.USER))
-                        sendMessage(sender, s, true);
+                        sendMessage(sender, "§7- " + s, false);
                 } else if (args[2].equalsIgnoreCase("getgroup")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target == null) {
@@ -115,7 +125,7 @@ public class PermissionCommand extends Command {
                                     "§7Der Spieler ist in der Gruppe " + player.getPermissionGroup().getColorCode()
                                             + player.getPermissionGroup().getName(), true);
 
-                            sendMessage(sender, "§7Er besitzt sie noch " + PunishUnit.getRemainingTime(player.getExpiration()), true);
+                            sendMessage(sender, "§7Er besitzt sie noch " + getRemainingTime(player.getExpiration()), true);
                         }
                     }
 
@@ -171,7 +181,7 @@ public class PermissionCommand extends Command {
                         mysql.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
-                    }else
+                    } else
                         sendMessage(sender, "§cPermission existiert bereits.", true);
                 } else if (args[2].equalsIgnoreCase("remove")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
@@ -197,7 +207,7 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§aPermission wurde gesetzt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
-                    }else
+                    } else
                         sendMessage(sender, "§cPermission existiert bereits.", true);
 
                 } else if (args[2].equalsIgnoreCase("remove")) {
@@ -233,8 +243,7 @@ public class PermissionCommand extends Command {
                     Long time = -1L;
                     if (mysql.getGroup(uuid) == group.getGroupId()) {
                         Long expiration = Long.valueOf(mysql.getExpiration(uuid));
-                        if (expiration != null)
-                            time = expiration + (1000L * 60 * 60 * 24 * duration);
+                        time = expiration + (1000L * 60 * 60 * 24 * duration);
                     } else if (duration != -1) {
                         time = System.currentTimeMillis() + (1000L * 60 * 60 * 24 * duration);
                     }
@@ -250,6 +259,27 @@ public class PermissionCommand extends Command {
                     }
                     sendMessage(sender, "§aDie Gruppe von §e"
                             + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
+                }
+            } else if (args[0].equalsIgnoreCase("group")) {
+                if (args[2].equalsIgnoreCase("edit")) {
+                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
+                    if (group == null) {
+                        sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
+                        return;
+                    }
+                    List<String> keys = Arrays.asList("name", "colorCode", "prefix", "parentGroup");
+                    if (keys.contains(args[3])) {
+                        if (args[3].equals("colorCode"))
+                            mysql.updateGroup(group.getGroupId(), args[3], "§" + args[4].replace("&", ""));
+                        else
+                            mysql.updateGroup(group.getGroupId(), args[3], args[4].replace("&", ""));
+                        playerManager.getGroupManager().updateGroups();
+                        sendMessage(sender, "§7Wert wurde geändert.", true);
+                    } else {
+                        sendMessage(sender, "§cDas ist kein gültiger Key.", true);
+                        sendMessage(sender, "§cFolgende Keys sind möglich: .", true);
+                        sendMessage(sender, "§cname, colorCode, prefix, parentGroup", true);
+                    }
                 }
             }
         } else if (args.length == 6) {
@@ -278,9 +308,80 @@ public class PermissionCommand extends Command {
 
     private void sendMessage(CommandSender sender, String message, boolean prefix) {
         if (prefix)
-            sender.sendMessage(new TextComponent("§7[§ePerms§7] " + message));
+            sender.sendMessage(new TextComponent("§7[§eHeliosPerms§7] " + message));
         else
             sender.sendMessage(new TextComponent(message));
+    }
+
+    private String getRemainingTime(Long end) {
+        long current = System.currentTimeMillis();
+        if (end == -1L) {
+            return "§ePERMANENT";
+        }
+        long millis = end - current;
+
+        long seconds = 0L;
+        long minutes = 0L;
+        long hours = 0L;
+        long days = 0L;
+        long weeks = 0L;
+        long years = 0L;
+        while (millis >= 1000L) {
+            millis -= 1000L;
+            seconds += 1L;
+        }
+        while (seconds >= 60L) {
+            seconds -= 60L;
+            minutes += 1L;
+        }
+        while (minutes >= 60L) {
+            minutes -= 60L;
+            hours += 1L;
+        }
+        while (hours >= 24L) {
+            hours -= 24L;
+            days += 1L;
+        }
+        while (days >= 7L) {
+            days -= 7L;
+            weeks += 1L;
+        }
+        while (weeks >= 52L) {
+            weeks -= 52L;
+            years += 1L;
+        }
+        String result = "";
+        if (years != 0L)
+            if (years == 1L)
+                result = result + "§e" + years + " §eJahr ";
+            else
+                result = result + "§e" + years + " §eJahre ";
+        if (weeks != 0L)
+            if (weeks == 1L)
+                result = result + "§e" + weeks + " §eWoche ";
+            else
+                result = result + "§e" + weeks + " §eWochen ";
+        if (days != 0L)
+            if (days == 1)
+                result = result + "§e" + days + " §eTag ";
+            else
+                result = result + "§e" + days + " §eTage ";
+        if (hours != 0L)
+            if (hours == 1)
+                result = result + "§e" + hours + " §eStunde ";
+            else
+                result = result + "§e" + hours + " §eStunden ";
+        if (minutes != 0L)
+            if (minutes == 1)
+                result = result + "§e" + minutes + " §eMinute ";
+            else
+                result = result + "§e" + minutes + " §eMinuten ";
+        if (seconds != 0L)
+            if (seconds == 1)
+                result = result + "§e" + seconds + " §eSekunde ";
+            else
+                result = result + "§e" + seconds + " §eSekunden ";
+        return result;
     }
 
 }
