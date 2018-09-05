@@ -55,26 +55,27 @@ public class PermissionCommand extends Command {
             sendMessage(sender, "§eMit /heliosperms help kannst du die Hilfe aufrufen.", true);
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("help")) {
-                sendMessage(sender, "§e/perms user (name) setgroup (group) (duration)", false);
-                sendMessage(sender, "§e/perms user (name) getgroup", false);
-                sendMessage(sender, "§e/perms user (name) add (permission)", false);
-                sendMessage(sender, "§e/perms user (name) remove (permission)", false);
-                sendMessage(sender, "§e/perms user (name) list", false);
-                sendMessage(sender, "§e/perms groups", false);
-                sendMessage(sender, "§e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)", false);
+                sendMessage(sender, "§7- §e/perms user (name) setgroup (group) (duration)", false);
+                sendMessage(sender, "§7- §e/perms user (name) getgroup", false);
+                sendMessage(sender, "§7- §e/perms user (name) add (permission)", false);
+                sendMessage(sender, "§7- §e/perms user (name) remove (permission)", false);
+                sendMessage(sender, "§7- §e/perms user (name) list", false);
+                sendMessage(sender, "§7- §e/perms groups", false);
+                sendMessage(sender, "§7- §e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)", false);
                 sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20§7\"", false);
-                sendMessage(sender, "§e/perms deleteGroup (id)", false);
-                sendMessage(sender, "§e/perms group (name) add (permission)", false);
-                sendMessage(sender, "§e/perms group (name) remove (permission)", false);
-                sendMessage(sender, "§e/perms group (name) list", false);
-                sendMessage(sender, "§e/perms group (name) users", false);
-                sendMessage(sender, "§e/perms group (name) edit (key) (value)", false);
+                sendMessage(sender, "§7- §e/perms deleteGroup (id)", false);
+                sendMessage(sender, "§7- §e/perms group (name) add (permission)", false);
+                sendMessage(sender, "§7- §e/perms group (name) remove (permission)", false);
+                sendMessage(sender, "§7- §e/perms group (name) list", false);
+                sendMessage(sender, "§7- §e/perms group (name) users", false);
+                sendMessage(sender, "§7- §e/perms group (name) edit (key) (value)", false);
+                sendMessage(sender, "§7- §e/perms group (name) info", false);
             } else if (args[0].equalsIgnoreCase("groups")) {
                 if (playerManager.getGroupManager().getGroups().size() == 0)
                     sendMessage(sender, "§cKonnte keine Gruppe finden.", true);
                 sendMessage(sender, "§7Es existieren folgende Gruppen:", true);
                 for (PermissionGroup group : playerManager.getGroupManager().getGroups())
-                    sendMessage(sender, "§7- " + group.getColorCode() + group.getName(), false);
+                    sendMessage(sender, "§7- " + group.getColorCode() + group.getName() + " | §7ID: §e" + group.getGroupId(), false);
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("deleteGroup")) {
@@ -98,7 +99,7 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§7Du hast die Gruppe §a" + permissionGroup.getName() + " §7entfernt.", true);
                     else {
                         sendMessage(sender, "§7Du kannst die default Gruppe nicht entfernen.", true);
-                        sendMessage(sender, "§7Du kannst sie jedoch mit /perms group (name) §7edit (key) §7(value) §7bearbeiten.", true);
+                        sendMessage(sender, "§7Du kannst sie jedoch mit /perms group (name) §7edit §7(key) §7(value) §7bearbeiten.", true);
                     }
 
                 } else
@@ -167,6 +168,18 @@ public class PermissionCommand extends Command {
                         for (String s : mysql.getUsers(group.getGroupId()))
                             sendMessage(sender, "§7" + s, false);
                     sendMessage(sender, "§7§m-----------------------------------------------------", false);
+                } else if (args[2].equalsIgnoreCase("info")) {
+                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
+                    if (group == null) {
+                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        return;
+                    }
+                    sendMessage(sender, "", false);
+                    sendMessage(sender, "§eInformationen:", false);
+                    sendMessage(sender, "§7ID: §a" + group.getGroupId(), false);
+                    sendMessage(sender, "§7Name: §a" + group.getColorCode() + group.getName(), false);
+                    sendMessage(sender, "§7ParentGroupID: §a" + group.getParentGroup(), false);
+                    sendMessage(sender, "", false);
                 }
             }
         } else if (args.length == 4) {
@@ -277,7 +290,7 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§7Wert wurde geändert.", true);
                     } else {
                         sendMessage(sender, "§cDas ist kein gültiger Key.", true);
-                        sendMessage(sender, "§cFolgende Keys sind möglich: .", true);
+                        sendMessage(sender, "§cFolgende Keys sind möglich:", true);
                         sendMessage(sender, "§cname, colorCode, prefix, parentGroup", true);
                     }
                 }
