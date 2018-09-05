@@ -43,7 +43,7 @@ public class PermissionCommand extends Command {
      * perms group (name) remove (permission)
      * perms group (name) list
      * perms group (name) users
-     *perms deletegroup (id)
+     * perms deletegroup (id)
      * perms group (name) edit (key) (value)
      */
     @Override
@@ -245,6 +245,7 @@ public class PermissionCommand extends Command {
                         duration = Integer.valueOf(args[4]);
                     } catch (NumberFormatException exception) {
                         exception.printStackTrace();
+                        sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
                         return;
                     }
                     String uuid = mysql.getUuid(args[1]);
@@ -253,25 +254,14 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    Long time = -1L;
-                    if (mysql.getGroup(uuid) == group.getGroupId()) {
-                        Long expiration = Long.valueOf(mysql.getExpiration(uuid));
-                        time = expiration + (1000L * 60 * 60 * 24 * duration);
-                    } else if (duration != -1) {
-                        time = System.currentTimeMillis() + (1000L * 60 * 60 * 24 * duration);
-                    }
-                    mysql.updateUser(uuid, args[1], group.getGroupId(), time);
                     PermissionPlayer permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
+                    if (permissionPlayer == null)
+                        permissionPlayer = playerManager.loadPlayer(UUID.fromString(uuid), args[1], true);
                     if (permissionPlayer != null) {
-                        permissionPlayer.setPermissionGroup(group);
-                        permissionPlayer.setExpiration(time);
+                        playerManager.setGroup(permissionPlayer, group, duration);
+                        sendMessage(sender, "§aDie Gruppe von §e"
+                                + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
                     }
-                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(UUID.fromString(uuid));
-                    if (proxiedPlayer != null) {
-                        BungeeUpdater.updateGroup(uuid, group.getGroupId());
-                    }
-                    sendMessage(sender, "§aDie Gruppe von §e"
-                            + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
                 }
             } else if (args[0].equalsIgnoreCase("group")) {
                 if (args[2].equalsIgnoreCase("edit")) {

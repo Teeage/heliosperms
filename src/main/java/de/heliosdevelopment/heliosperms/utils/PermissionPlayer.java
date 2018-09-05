@@ -8,12 +8,14 @@ import java.util.UUID;
 public class PermissionPlayer {
 
     private final UUID uuid;
+    private final String name;
     private PermissionGroup permissionGroup;
     private List<String> permissions;
     private long expiration;
 
-    public PermissionPlayer(UUID uuid, PermissionGroup permissionGroup, List<String> permissions, long expiration) {
+    public PermissionPlayer(UUID uuid, String name, PermissionGroup permissionGroup, List<String> permissions, long expiration) {
         this.uuid = uuid;
+        this.name = name;
         if (permissionGroup == null)
             this.permissionGroup = HeliosPerms.getInstance().getGroupManager().getGroup(20);
         else
@@ -48,6 +50,10 @@ public class PermissionPlayer {
 
     public void setPermissionGroup(PermissionGroup permissionGroup) {
         this.permissionGroup = permissionGroup;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean hasPermission(String permission) {
