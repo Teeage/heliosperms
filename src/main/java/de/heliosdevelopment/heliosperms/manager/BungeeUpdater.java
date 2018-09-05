@@ -14,12 +14,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class BungeeUpdater {
 
     public static void updateGroup(String uuid, Integer groupId) {
-        List<ServerInfo> servers = new ArrayList<>();
-        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            if (!servers.contains(p.getServer().getInfo()))
-                servers.add(p.getServer().getInfo());
-        }
-        for (ServerInfo server : servers) {
+        for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(stream);
             try {
@@ -34,12 +29,7 @@ public class BungeeUpdater {
     }
 
     public static void updatePermissions(PermissionType type) {
-        List<ServerInfo> servers = new ArrayList<>();
-        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-            if (!servers.contains(p.getServer().getInfo()))
-                servers.add(p.getServer().getInfo());
-        }
-        for (ServerInfo server : servers) {
+        for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(stream);
             try {

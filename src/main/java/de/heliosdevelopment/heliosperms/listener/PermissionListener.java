@@ -7,6 +7,8 @@ import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.Optional;
+
 public class PermissionListener implements Listener {
 
     private final PlayerManager playerManager;
@@ -18,9 +20,9 @@ public class PermissionListener implements Listener {
     @EventHandler
     public void onPermissionCheck(PermissionCheckEvent event) {
         if (event.getSender() instanceof ProxiedPlayer) {
-            PermissionPlayer permissionPlayer = playerManager.getPlayer(((ProxiedPlayer) event.getSender()).getUniqueId());
-            if (permissionPlayer != null)
-                if (permissionPlayer.hasPermission(event.getPermission()))
+            Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(((ProxiedPlayer) event.getSender()).getUniqueId());
+            if (permissionPlayer.isPresent())
+                if (permissionPlayer.get().hasPermission(event.getPermission()))
                     event.setHasPermission(true);
         }
 

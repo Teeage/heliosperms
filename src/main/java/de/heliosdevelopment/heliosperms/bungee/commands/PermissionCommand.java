@@ -16,6 +16,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PermissionCommand extends Command {
@@ -24,7 +25,7 @@ public class PermissionCommand extends Command {
     private final PlayerManager playerManager;
 
     public PermissionCommand(MySQL mysql, PlayerManager playerManager) {
-        super("hperms", "", "heliosperms", "perms", "rank");
+        super("hperms", "heliosperms.admin", "heliosperms", "perms", "rank");
         this.mysql = mysql;
         this.playerManager = playerManager;
     }
@@ -48,8 +49,6 @@ public class PermissionCommand extends Command {
      */
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("heliosperms.admin"))
-            return;
         if (args.length == 0) {
             sendMessage(sender, "§eHeliosPerms §7v" + Main.getInstance().getDescription().getVersion() + " by §eTeeage.", true);
             sendMessage(sender, "§eMit /heliosperms help kannst du die Hilfe aufrufen.", true);
@@ -119,14 +118,14 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler ist nicht online!", true);
                         return;
                     }
-                    PermissionPlayer player = playerManager.getPlayer(target.getUniqueId());
-                    if (player != null) {
-                        if (player.getPermissionGroup() != null) {
+                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(target.getUniqueId());
+                    if (permissionPlayer.isPresent()) {
+                        if (permissionPlayer.get().getPermissionGroup() != null) {
                             sendMessage(sender,
-                                    "§7Der Spieler ist in der Gruppe " + player.getPermissionGroup().getColorCode()
-                                            + player.getPermissionGroup().getName(), true);
+                                    "§7Der Spieler ist in der Gruppe " + permissionPlayer.get().getPermissionGroup().getColorCode()
+                                            + permissionPlayer.get().getPermissionGroup().getName(), true);
 
-                            sendMessage(sender, "§7Er besitzt sie noch " + getRemainingTime(player.getExpiration()), true);
+                            sendMessage(sender, "§7Er besitzt sie noch " + getRemainingTime(permissionPlayer.get().getExpiration()), true);
                         }
                     }
 
@@ -254,11 +253,11 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    PermissionPlayer permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
-                    if (permissionPlayer == null)
-                        permissionPlayer = playerManager.loadPlayer(UUID.fromString(uuid), args[1], true);
+                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
+                    if (!permissionPlayer.isPresent())
+                        permissionPlayer = Optional.of(playerManager.loadPlayer(UUID.fromString(uuid), args[1], true));
                     if (permissionPlayer != null) {
-                        playerManager.setGroup(permissionPlayer, group, duration);
+                        playerManager.setGroup(permissionPlayer.get(), group, duration);
                         sendMessage(sender, "§aDie Gruppe von §e"
                                 + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
                     }

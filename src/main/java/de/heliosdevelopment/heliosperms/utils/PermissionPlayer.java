@@ -63,8 +63,10 @@ public class PermissionPlayer {
         if (permissions.contains(permission.toLowerCase())) return true;
         String adminPermission = null;
         String[] block = permission.split("\\.");
-        if (block.length > 1) {
+        if (block.length == 1) {
             adminPermission = block[0] + ".*";
+        } else if (block.length == 2) {
+            adminPermission = block[0] + block[1] + ".*";
         }
         return (adminPermission != null) && (permissions.contains(adminPermission));
     }

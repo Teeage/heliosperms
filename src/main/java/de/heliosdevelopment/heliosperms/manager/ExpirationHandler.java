@@ -18,7 +18,7 @@ public class ExpirationHandler {
     }
 
     private void runExpirationTimer() {
-        PermissionGroup userGroup = playerManager.getGroupManager().getGroup(20);
+        PermissionGroup userGroup = playerManager.getGroupManager().getDefaultGroup();
         if (userGroup == null) throw new NullPointerException("Could not find the default group!");
         ProxyServer.getInstance().getScheduler().schedule(Main.getInstance(), () -> {
             for (PermissionPlayer permissionPlayer : playerManager.getPlayers()) {

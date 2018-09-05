@@ -21,6 +21,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 public class PlayerListener implements Listener {
 
@@ -69,9 +70,10 @@ public class PlayerListener implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (!coloredChat) return;
         Player player = e.getPlayer();
-        PermissionGroup group = playerManager.getPlayer(player.getUniqueId()).getPermissionGroup();
-        if (group == null)
-            return;
+        Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
+        if (!permissionPlayerOptional.isPresent()) return;
+        PermissionGroup group = permissionPlayerOptional.get().getPermissionGroup();
+        if (group == null) return;
         String format = chatFormat;
         format = ChatColor.translateAlternateColorCodes('&', format);
         if (format.contains("%colorCode%"))
@@ -92,9 +94,9 @@ public class PlayerListener implements Listener {
     public void onGroupChange(GroupChangeEvent event) {
         Player player = Bukkit.getPlayer(event.getUniqueId());
         if (player != null) {
-            PermissionPlayer permissionPlayer = playerManager.getPlayer(event.getUniqueId());
-            if (permissionPlayer != null) {
-                permissionPlayer.setPermissionGroup(playerManager.getGroupManager().getGroup(event.getGroupId()));
+            Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
+            if (permissionPlayerOptional.isPresent()){
+                permissionPlayerOptional.get().setPermissionGroup(playerManager.getGroupManager().getGroup(event.getGroupId()));
                 setPrefix(player);
             }
         }
@@ -106,7 +108,9 @@ public class PlayerListener implements Listener {
         Scoreboard board = p.getScoreboard();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            PermissionGroup group = playerManager.getPlayer(player.getUniqueId()).getPermissionGroup();
+            Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
+            if (!permissionPlayerOptional.isPresent()) continue;
+            PermissionGroup group = permissionPlayerOptional.get().getPermissionGroup();
             Team color = board.getTeam(Integer.valueOf(group.getGroupId()).toString());
             if (color == null) {
                 color = board.registerNewTeam(Integer.valueOf(group.getGroupId()).toString());
@@ -115,7 +119,9 @@ public class PlayerListener implements Listener {
             color.addEntry(player.getName());
         }
 
-        PermissionGroup group = playerManager.getPlayer(p.getUniqueId()).getPermissionGroup();
+        Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(p.getUniqueId());
+        if (!permissionPlayerOptional.isPresent()) return;
+        PermissionGroup group = permissionPlayerOptional.get().getPermissionGroup();
         for (Player pl : Bukkit.getOnlinePlayers()) {
             Scoreboard board1 = pl.getScoreboard();
             Team color = board1.getTeam(Integer.valueOf(group.getGroupId()).toString());

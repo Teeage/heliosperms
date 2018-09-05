@@ -9,6 +9,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerManager {
@@ -36,16 +37,16 @@ public class PlayerManager {
     }
 
     public void unloadPlayer(UUID uuid) {
-        PermissionPlayer permissionPlayer = getPlayer(uuid);
-        if (permissionPlayer != null)
-            players.remove(permissionPlayer);
+        Optional<PermissionPlayer> permissionPlayer = getPlayer(uuid);
+        if (permissionPlayer.isPresent())
+            players.remove(permissionPlayer.get());
     }
 
-    public PermissionPlayer getPlayer(UUID uuid) {
+    public Optional<PermissionPlayer> getPlayer(UUID uuid) {
         for (PermissionPlayer permissionPlayer : players)
             if (permissionPlayer.getUuid().equals(uuid))
-                return permissionPlayer;
-        return null;
+                return Optional.of(permissionPlayer);
+        return Optional.empty();
     }
 
     public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration) {

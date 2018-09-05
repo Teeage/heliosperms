@@ -1,6 +1,7 @@
 package de.heliosdevelopment.heliosperms;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
@@ -47,9 +48,9 @@ public class HeliosPerms {
      * @return group of the player
      */
     public PermissionGroup getGroup(UUID uuid) {
-        PermissionPlayer player = playerManager.getPlayer(uuid);
-        if (player != null)
-            return player.getPermissionGroup();
+        Optional<PermissionPlayer> player = playerManager.getPlayer(uuid);
+        if (player.isPresent())
+            return player.get().getPermissionGroup();
         return playerManager.getGroupManager().getGroup(connection.getGroup(uuid.toString()));
 
 

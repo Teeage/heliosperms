@@ -16,6 +16,7 @@ import com.google.common.io.ByteStreams;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.UUID;
 
 public class MessageListener implements PluginMessageListener {
@@ -45,7 +46,7 @@ public class MessageListener implements PluginMessageListener {
                         HeliosPerms.getInstance().getPlayerManager().updatePermissions();
 
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        PermissionPlayer permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());
+                        Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());
 
                         if (permissionPlayer == null) return;
 
@@ -53,7 +54,7 @@ public class MessageListener implements PluginMessageListener {
                         try {
                             Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
                             field.setAccessible(true);
-                            field.set(onlinePlayer, new Permissible(onlinePlayer, permissionPlayer));
+                            field.set(onlinePlayer, new Permissible(onlinePlayer, permissionPlayer.get()));
                         } catch (NoSuchFieldException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
