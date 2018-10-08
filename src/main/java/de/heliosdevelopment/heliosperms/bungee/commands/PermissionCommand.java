@@ -1,13 +1,12 @@
 package de.heliosdevelopment.heliosperms.bungee.commands;
 
-import de.heliosdevelopment.heliosperms.MySQL;
 import de.heliosdevelopment.heliosperms.bungee.Main;
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.manager.BungeeUpdater;
 import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,12 +20,12 @@ import java.util.UUID;
 
 public class PermissionCommand extends Command {
 
-    private final MySQL mysql;
+    private final DatabaseHandler databaseHandler;
     private final PlayerManager playerManager;
 
-    public PermissionCommand(MySQL mysql, PlayerManager playerManager) {
+    public PermissionCommand(DatabaseHandler databaseHandler, PlayerManager playerManager) {
         super("hperms", "heliosperms.admin", "heliosperms", "perms", "rank");
-        this.mysql = mysql;
+        this.databaseHandler = databaseHandler;
         this.playerManager = playerManager;
     }
 
@@ -110,7 +109,7 @@ public class PermissionCommand extends Command {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target == null) return;
                     sendMessage(sender, "§7Die Permissions von §a" + target.getName() + " §7:", true);
-                    for (String s : mysql.getPermissions(target.getUniqueId().toString(), PermissionType.USER))
+                    for (String s : databaseHandler.getPermissions(target.getUniqueId().toString(), PermissionType.USER))
                         sendMessage(sender, "§7- " + s, false);
                 } else if (args[2].equalsIgnoreCase("getgroup")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
@@ -162,9 +161,9 @@ public class PermissionCommand extends Command {
                     sendMessage(sender, "§aGruppe: " + group.getColorCode() + group.getName(), false);
                     sendMessage(sender, "§eUsers: ", false);
                     if (group.getName().toLowerCase().equals("user"))
-                        sendMessage(sender, String.valueOf(mysql.getUsers(group.getGroupId()).size()), false);
+                        sendMessage(sender, String.valueOf(databaseHandler.getUsers(group.getGroupId()).size()), false);
                     else
-                        for (String s : mysql.getUsers(group.getGroupId()))
+                        for (String s : databaseHandler.getUsers(group.getGroupId()))
                             sendMessage(sender, "§7" + s, false);
                     sendMessage(sender, "§7§m-----------------------------------------------------", false);
                 } else if (args[2].equalsIgnoreCase("info")) {
@@ -189,8 +188,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (!mysql.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
-                        mysql.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
+                    if (!databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
+                        databaseHandler.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
                     } else
@@ -201,8 +200,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (mysql.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
-                        mysql.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
+                    if (databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
+                        databaseHandler.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich entfernt.", true);
                     }
@@ -214,8 +213,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
-                    if (!mysql.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
-                        mysql.addPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
+                    if (!databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
+                        databaseHandler.addPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
                         sendMessage(sender, "§aPermission wurde gesetzt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
@@ -228,8 +227,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    if (mysql.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
-                        mysql.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
+                    if (databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
+                        databaseHandler.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
                         sendMessage(sender, "§aPermission wurde entfernt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
@@ -247,7 +246,7 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
                         return;
                     }
-                    String uuid = mysql.getUuid(args[1]);
+                    String uuid = databaseHandler.getUuid(args[1]);
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[3]);
                     if (group == null) {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
@@ -272,9 +271,9 @@ public class PermissionCommand extends Command {
                     List<String> keys = Arrays.asList("name", "colorCode", "prefix", "parentGroup");
                     if (keys.contains(args[3])) {
                         if (args[3].equals("colorCode"))
-                            mysql.updateGroup(group.getGroupId(), args[3], "§" + args[4].replace("&", ""));
+                            databaseHandler.updateGroup(group.getGroupId(), args[3], "§" + args[4].replace("&", ""));
                         else
-                            mysql.updateGroup(group.getGroupId(), args[3], args[4].replace("&", ""));
+                            databaseHandler.updateGroup(group.getGroupId(), args[3], args[4].replace("&", ""));
                         playerManager.getGroupManager().updateGroups();
                         sendMessage(sender, "§7Wert wurde geändert.", true);
                     } else {
@@ -295,7 +294,7 @@ public class PermissionCommand extends Command {
                 if (groupId == -1)
                     return;
                 if (playerManager.getGroupManager().getGroup(groupId) == null) {
-                    mysql.addGroup(Integer.valueOf(args[1]), args[2], "§" + args[3], args[4], Integer.valueOf(args[5]));
+                    databaseHandler.addGroup(Integer.valueOf(args[1]), args[2], "§" + args[3], args[4], Integer.valueOf(args[5]));
                     playerManager.getGroupManager().updateGroups();
                     sendMessage(sender, "§7Du hast die Gruppe §e" + args[2] + " §7erstellt.", true);
                 } else {

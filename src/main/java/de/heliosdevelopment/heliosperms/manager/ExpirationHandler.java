@@ -28,7 +28,7 @@ public class ExpirationHandler {
                     permissionPlayer.setExpiration(-1);
                     ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(permissionPlayer.getUuid());
                     if (proxiedPlayer != null)
-                        Main.getInstance().getMysql().updateUser(permissionPlayer.getUuid().toString(), proxiedPlayer.getName(), userGroup.getGroupId(), (long) -1);
+                        Main.getInstance().getDatabaseHandler().updateUser(permissionPlayer.getUuid().toString(), proxiedPlayer.getName(), userGroup.getGroupId(), (long) -1);
                     BungeeUpdater.updateGroup(permissionPlayer.getUuid().toString(), userGroup.getGroupId());
                 }
             }

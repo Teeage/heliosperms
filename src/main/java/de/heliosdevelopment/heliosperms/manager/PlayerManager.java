@@ -1,6 +1,6 @@
 package de.heliosdevelopment.heliosperms.manager;
 
-import de.heliosdevelopment.heliosperms.MySQL;
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
@@ -15,24 +15,24 @@ import java.util.UUID;
 public class PlayerManager {
 
     private final List<PermissionPlayer> players = new ArrayList<>();
-    private final MySQL mysql;
+    private final DatabaseHandler databaseHandler;
     private final GroupManager groupManager;
 
-    public PlayerManager(MySQL mysql, GroupManager groupManager) {
-        this.mysql = mysql;
+    public PlayerManager(DatabaseHandler databaseHandler, GroupManager groupManager) {
+        this.databaseHandler = databaseHandler;
         this.groupManager = groupManager;
     }
 
     public PermissionPlayer loadPlayer(UUID uuid, String name, boolean bungee) {
-        String expiration = mysql.getExpiration(uuid.toString()) == null ? String.valueOf(-1) : mysql.getExpiration(uuid.toString());
-        PermissionGroup group = groupManager.getGroup(mysql.getGroup(uuid.toString()));
+        String expiration = databaseHandler.getExpiration(uuid.toString()) == null ? String.valueOf(-1) : databaseHandler.getExpiration(uuid.toString());
+        PermissionGroup group = groupManager.getGroup(databaseHandler.getGroup(uuid.toString()));
         PermissionPlayer permissionPlayer = new PermissionPlayer(uuid, name,
                 group != null ? group : groupManager.getDefaultGroup(),
-                mysql.getPermissions(uuid.toString(), PermissionType.USER),
+                databaseHandler.getPermissions(uuid.toString(), PermissionType.USER),
                 Long.valueOf(expiration));
         players.add(permissionPlayer);
-        if (mysql.getGroup(uuid.toString()) == -1 && bungee)
-            mysql.addUser(uuid.toString(), name, 20, (long) -1);
+        if (databaseHandler.getGroup(uuid.toString()) == -1 && bungee)
+            databaseHandler.addUser(uuid.toString(), name, 20, (long) -1);
         return permissionPlayer;
     }
 
@@ -62,7 +62,7 @@ public class PlayerManager {
     }
 
     public void update(PermissionPlayer permissionPlayer) {
-        mysql.updateUser(permissionPlayer.getUuid().toString(), permissionPlayer.getName(), permissionPlayer.getPermissionGroup().getGroupId(), permissionPlayer.getExpiration());
+        databaseHandler.updateUser(permissionPlayer.getUuid().toString(), permissionPlayer.getName(), permissionPlayer.getPermissionGroup().getGroupId(), permissionPlayer.getExpiration());
     }
 
     public void sendUpdateToSpigot(UUID uuid, int groupId){
@@ -74,7 +74,7 @@ public class PlayerManager {
 
     public void updatePermissions() {
         for (PermissionPlayer permissionPlayer : players)
-            permissionPlayer.setPermissions(mysql.getPermissions(permissionPlayer.getUuid().toString(), PermissionType.USER));
+            permissionPlayer.setPermissions(databaseHandler.getPermissions(permissionPlayer.getUuid().toString(), PermissionType.USER));
     }
 
     public List<PermissionPlayer> getPlayers() {

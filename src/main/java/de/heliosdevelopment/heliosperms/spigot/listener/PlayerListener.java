@@ -46,7 +46,6 @@ public class PlayerListener implements Listener {
         if (permissionPlayer == null) return;
 
         try {
-            String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
             Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
             field.setAccessible(true);
             field.set(event.getPlayer(), new Permissible(event.getPlayer(), permissionPlayer));

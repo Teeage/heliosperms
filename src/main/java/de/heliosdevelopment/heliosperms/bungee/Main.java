@@ -1,13 +1,16 @@
 package de.heliosdevelopment.heliosperms.bungee;
 
 import de.heliosdevelopment.heliosperms.HeliosPerms;
-import de.heliosdevelopment.heliosperms.MySQL;
 import de.heliosdevelopment.heliosperms.bungee.commands.PermissionCommand;
 import de.heliosdevelopment.heliosperms.bungee.listener.BungeeListener;
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.listener.PermissionListener;
 import de.heliosdevelopment.heliosperms.manager.ExpirationHandler;
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import de.heliosdevelopment.sqlconnector.SQLClient;
+import de.heliosdevelopment.sqlconnector.SQLInfo;
+import de.heliosdevelopment.sqlconnector.util.SQLConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -18,9 +21,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class Main extends Plugin {
-    private MySQL mysql;
     private static Main instance;
     private String administrator;
+    private DatabaseHandler databaseHandler;
 
     @Override
     public void onEnable() {
@@ -49,16 +52,6 @@ public class Main extends Plugin {
             e.printStackTrace();
         }
         assert cfg != null;
-        if (!cfg.contains("mysql.host"))
-            cfg.set("mysql.host", "localhost");
-        if (!cfg.contains("mysql.port"))
-            cfg.set("mysql.port", "3306");
-        if (!cfg.contains("mysql.database"))
-            cfg.set("mysql.database", "database");
-        if (!cfg.contains("mysql.user"))
-            cfg.set("mysql.user", "user");
-        if (!cfg.contains("mysql.password"))
-            cfg.set("mysql.password", "password");
         if (!cfg.contains("settings.administrator"))
             cfg.set("settings.administrator", "HierDeinenMinecraftNamenEintragen");
         try {
@@ -68,32 +61,43 @@ public class Main extends Plugin {
         }
 
         administrator = cfg.getString("settings.administrator");
-        mysql = new MySQL(cfg.getString("mysql.host"), cfg.getString("mysql.port"), cfg.getString("mysql.database")
-                , cfg.getString("mysql.user"), cfg.getString("mysql.password"));
-        GroupManager groupManager = new GroupManager(mysql);
-        PlayerManager playerManager = new PlayerManager(mysql, groupManager);
-        new HeliosPerms(mysql, playerManager, true);
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager, mysql));
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionListener(playerManager));
-        getProxy().getPluginManager().registerCommand(this, new PermissionCommand(mysql, playerManager));
-        new ExpirationHandler(playerManager);
-        getProxy().registerChannel("HeliosPerms");
+
+        try {
+            SQLConfig config = new SQLConfig(getDataFolder() + "/sql.json");
+            SQLInfo sqlInfo = config.getSqlInfo();
+            SQLClient client = new SQLClient(sqlInfo, "com.mysql.jdbc.Driver", "jdbc:mysql", 5);
+            databaseHandler = new DatabaseHandler(client);
+            if (!databaseHandler.bootstrap()) {
+                client.doShutdown();
+                System.out.println("[HeliosPerms] Could not connect to your mysql database.");
+            }
+            GroupManager groupManager = new GroupManager(databaseHandler);
+            PlayerManager playerManager = new PlayerManager(databaseHandler, groupManager);
+            new HeliosPerms(databaseHandler, playerManager, true);
+            ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager, databaseHandler));
+            ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionListener(playerManager));
+            getProxy().getPluginManager().registerCommand(this, new PermissionCommand(databaseHandler, playerManager));
+            new ExpirationHandler(playerManager);
+            getProxy().registerChannel("HeliosPerms");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDisable() {
-        mysql.close();
+        databaseHandler.getSqlClient().doShutdown();
     }
 
     public static Main getInstance() {
         return instance;
     }
 
-    public MySQL getMysql() {
-        return mysql;
-    }
-
     public String getAdministrator() {
         return administrator;
+    }
+
+    public DatabaseHandler getDatabaseHandler() {
+        return databaseHandler;
     }
 }

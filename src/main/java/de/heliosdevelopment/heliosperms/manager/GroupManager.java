@@ -1,6 +1,6 @@
 package de.heliosdevelopment.heliosperms.manager;
 
-import de.heliosdevelopment.heliosperms.MySQL;
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 
@@ -11,22 +11,22 @@ import java.util.List;
 public class GroupManager {
 
     private List<PermissionGroup> groups;
-    private final MySQL mysql;
+    private final DatabaseHandler databaseHandler;
     private final PermissionGroup defaultGroup;
 
-    public GroupManager(MySQL mysql) {
-        this.mysql = mysql;
-        this.groups = mysql.getGroups();
+    public GroupManager(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
+        this.groups = databaseHandler.getGroups();
         if (getGroup(20) == null) {
             groups.add(new PermissionGroup(20, "User", "User", "§7", -31, Collections.singletonList("")));
-            mysql.addGroup(20, "User", "§7", "User", -31);
+            databaseHandler.addGroup(20, "User", "§7", "User", -31);
             groups.add(new PermissionGroup(1, "Administrator", "Administrator", "§c",
                     20, Arrays.asList("bukkit.*", "minecraft.*", "heliosperms.admin")));
-            mysql.addGroup(1, "Administrator", "§c", "Administrator",
+            databaseHandler.addGroup(1, "Administrator", "§c", "Administrator",
                     20);
-            mysql.addPermission(String.valueOf(1), PermissionType.GROUP, "bukkit.*");
-            mysql.addPermission(String.valueOf(1), PermissionType.GROUP, "minecraft.*");
-            mysql.addPermission(String.valueOf(1), PermissionType.GROUP, "heliosperms.*");
+            databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "bukkit.*");
+            databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "minecraft.*");
+            databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "heliosperms.*");
         }
         defaultGroup = getGroup(20);
         if (defaultGroup == null)
@@ -57,18 +57,18 @@ public class GroupManager {
         if (permissionGroup.equals(defaultGroup))
             return false;
         groups.remove(permissionGroup);
-        mysql.removeGroup(permissionGroup.getGroupId());
+        databaseHandler.removeGroup(permissionGroup.getGroupId());
         return true;
 
     }
 
     public void updateGroups() {
-        groups = mysql.getGroups();
+        groups = databaseHandler.getGroups();
     }
 
     public void updatePermissions() {
         for (PermissionGroup group : groups)
-            group.setPermissions(mysql.getPermissions(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP));
+            group.setPermissions(databaseHandler.getPermissions(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP));
     }
 
     public List<PermissionGroup> getGroups() {

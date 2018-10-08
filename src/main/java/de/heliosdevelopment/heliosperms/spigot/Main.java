@@ -1,22 +1,21 @@
 package de.heliosdevelopment.heliosperms.spigot;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
 import de.heliosdevelopment.heliosperms.spigot.listener.PlayerListener;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import de.heliosdevelopment.sqlconnector.SQLClient;
+import de.heliosdevelopment.sqlconnector.SQLInfo;
+import de.heliosdevelopment.sqlconnector.util.SQLConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.heliosdevelopment.heliosperms.HeliosPerms;
-import de.heliosdevelopment.heliosperms.MySQL;
 import de.heliosdevelopment.heliosperms.spigot.listener.MessageListener;
 
 public class Main extends JavaPlugin {
-    private MySQL mysql;
+    private DatabaseHandler databaseHandler;
     private static Main instance;
 
     @Override
@@ -31,38 +30,35 @@ public class Main extends JavaPlugin {
             getConfig().set("settings.tablist.format", "%colorCode%%prefix% &7× %player%");
         if (!getConfig().contains("settings.chat.format"))
             getConfig().set("settings.chat.format", "%colorCode%%name% &8┃ &7%player% &e»&f");
-
-
-        if (!getConfig().contains("mysql.host"))
-            getConfig().set("mysql.host", "localhost");
-        if (!getConfig().contains("mysql.port"))
-            getConfig().set("mysql.port", "3306");
-        if (!getConfig().contains("mysql.database"))
-            getConfig().set("mysql.database", "database");
-        if (!getConfig().contains("mysql.user"))
-            getConfig().set("mysql.user", "user");
-        if (!getConfig().contains("mysql.password"))
-            getConfig().set("mysql.password", "password");
         saveConfig();
 
+        try {
+            SQLConfig config = new SQLConfig(getDataFolder() + "/sql.json");
+            SQLInfo sqlInfo = config.getSqlInfo();
+            SQLClient client = new SQLClient(sqlInfo, "com.mysql.jdbc.Driver", "jdbc:mysql", 5);
+            databaseHandler = new DatabaseHandler(client);
+            if (!databaseHandler.bootstrap()) {
+                client.doShutdown();
+                System.out.println("[HeliosPerms] Could not connect to your mysql database.");
+            }
 
-        mysql = new MySQL(getConfig().getString("mysql.host"), getConfig().getString("mysql.port"), getConfig().getString("mysql.database")
-                , getConfig().getString("mysql.user"), getConfig().getString("mysql.password"));
+            GroupManager groupManager = new GroupManager(databaseHandler);
+            PlayerManager playerManager = new PlayerManager(databaseHandler, groupManager);
+            new HeliosPerms(databaseHandler, playerManager, false);
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener(playerManager));
+            Bukkit.getPluginManager().registerEvents(new PlayerListener(playerManager, getConfig().getBoolean("settings.tablist.active"), getConfig().getBoolean("settings.chat.active"), getConfig().getString("settings.tablist.format"), getConfig().getString("settings.chat.format")), this);
 
-        GroupManager groupManager = new GroupManager(mysql);
-        PlayerManager playerManager = new PlayerManager(mysql, groupManager);
-        new HeliosPerms(mysql, playerManager, false);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener(playerManager));
-        Bukkit.getPluginManager().registerEvents(new PlayerListener(playerManager, getConfig().getBoolean("settings.tablist.active"), getConfig().getBoolean("settings.chat.active"), getConfig().getString("settings.tablist.format"), getConfig().getString("settings.chat.format")), this);
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            playerManager.loadPlayer(player.getUniqueId(), player.getName(), false);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                playerManager.loadPlayer(player.getUniqueId(), player.getName(), false);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
     @Override
     public void onDisable() {
-        mysql.close();
+        databaseHandler.getSqlClient().doShutdown();
     }
 
     public static Main getInstance() {

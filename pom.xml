@@ -6,7 +6,7 @@
 
     <groupId>de.heliosdevelopment</groupId>
     <artifactId>heliosperms</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
 
     <developers>
         <developer>
@@ -57,6 +57,12 @@
             <version>1.12-SNAPSHOT</version>
             <type>javadoc</type>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.heliosdevelopment</groupId>
+            <artifactId>sql-connector</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

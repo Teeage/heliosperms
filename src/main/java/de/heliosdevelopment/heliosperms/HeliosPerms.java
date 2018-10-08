@@ -4,17 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.manager.GroupManager;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.utils.*;
 
 public class HeliosPerms {
     private static HeliosPerms instance;
-    private final MySQL connection;
+    private final DatabaseHandler connection;
     private final boolean isBungee;
     private final PlayerManager playerManager;
 
-    public HeliosPerms(MySQL connection, PlayerManager playerManager, boolean isBungee) {
+    public HeliosPerms(DatabaseHandler connection, PlayerManager playerManager, boolean isBungee) {
         instance = this;
         this.connection = connection;
         this.playerManager = playerManager;
