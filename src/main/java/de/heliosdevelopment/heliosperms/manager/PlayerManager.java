@@ -38,8 +38,7 @@ public class PlayerManager {
 
     public void unloadPlayer(UUID uuid) {
         Optional<PermissionPlayer> permissionPlayer = getPlayer(uuid);
-        if (permissionPlayer.isPresent())
-            players.remove(permissionPlayer.get());
+        permissionPlayer.ifPresent(players::remove);
     }
 
     public Optional<PermissionPlayer> getPlayer(UUID uuid) {

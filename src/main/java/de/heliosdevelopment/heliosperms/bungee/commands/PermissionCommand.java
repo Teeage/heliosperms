@@ -255,7 +255,7 @@ public class PermissionCommand extends Command {
                     Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
                     if (!permissionPlayer.isPresent())
                         permissionPlayer = Optional.of(playerManager.loadPlayer(UUID.fromString(uuid), args[1], true));
-                    if (permissionPlayer != null) {
+                    if (permissionPlayer.isPresent()){
                         playerManager.setGroup(permissionPlayer.get(), group, duration);
                         sendMessage(sender, "§aDie Gruppe von §e"
                                 + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);

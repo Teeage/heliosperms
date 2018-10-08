@@ -48,7 +48,7 @@ public class MessageListener implements PluginMessageListener {
                     for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                         Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());
 
-                        if (permissionPlayer == null) return;
+                        if (!permissionPlayer.isPresent()) return;
 
 
                         try {

@@ -30,10 +30,11 @@ public class DatabaseHandler {
             PreparedStatement permissions = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `permissions` (`type` VARCHAR(99) NOT NULL, `name` VARCHAR(99) NOT NULL NOT NULL, `permission` VARCHAR(99) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             permissions.execute();
             permissions.close();
+            return true;
         } catch (SQLException e) {
-            return false;
+            e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     public List<String> getPermissions(String name, PermissionType type) {

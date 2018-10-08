@@ -3,13 +3,10 @@ package de.heliosdevelopment.heliosperms.manager;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeUpdater {
 
