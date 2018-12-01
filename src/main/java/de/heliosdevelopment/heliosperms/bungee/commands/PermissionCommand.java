@@ -7,8 +7,11 @@ import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -53,21 +56,21 @@ public class PermissionCommand extends Command {
             sendMessage(sender, "§eMit /heliosperms help kannst du die Hilfe aufrufen.", true);
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("help")) {
-                sendMessage(sender, "§7- §e/perms user (name) setgroup (group) (duration)", false);
-                sendMessage(sender, "§7- §e/perms user (name) getgroup", false);
-                sendMessage(sender, "§7- §e/perms user (name) add (permission)", false);
-                sendMessage(sender, "§7- §e/perms user (name) remove (permission)", false);
-                sendMessage(sender, "§7- §e/perms user (name) list", false);
-                sendMessage(sender, "§7- §e/perms groups", false);
-                sendMessage(sender, "§7- §e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)", false);
+                sendClickableMessage(sender, "§7- §e/perms user (name) setgroup (group) (duration)");
+                sendClickableMessage(sender, "§7- §e/perms user (name) getgroup");
+                sendClickableMessage(sender, "§7- §e/perms user (name) add (permission)");
+                sendClickableMessage(sender, "§7- §e/perms user (name) remove (permission)");
+                sendClickableMessage(sender, "§7- §e/perms user (name) list");
+                sendClickableMessage(sender, "§7- §e/perms groups");
+                sendClickableMessage(sender, "§7- §e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)");
                 sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20§7\"", false);
-                sendMessage(sender, "§7- §e/perms deleteGroup (id)", false);
-                sendMessage(sender, "§7- §e/perms group (name) add (permission)", false);
-                sendMessage(sender, "§7- §e/perms group (name) remove (permission)", false);
-                sendMessage(sender, "§7- §e/perms group (name) list", false);
-                sendMessage(sender, "§7- §e/perms group (name) users", false);
-                sendMessage(sender, "§7- §e/perms group (name) edit (key) (value)", false);
-                sendMessage(sender, "§7- §e/perms group (name) info", false);
+                sendClickableMessage(sender, "§7- §e/perms deleteGroup (id)");
+                sendClickableMessage(sender, "§7- §e/perms group (name) add (permission)");
+                sendClickableMessage(sender, "§7- §e/perms group (name) remove (permission)");
+                sendClickableMessage(sender, "§7- §e/perms group (name) list");
+                sendClickableMessage(sender, "§7- §e/perms group (name) users");
+                sendClickableMessage(sender, "§7- §e/perms group (name) edit (key) (value)");
+                sendClickableMessage(sender, "§7- §e/perms group (name) info");
             } else if (args[0].equalsIgnoreCase("groups")) {
                 if (playerManager.getGroupManager().getGroups().size() == 0)
                     sendMessage(sender, "§cKonnte keine Gruppe finden.", true);
@@ -312,6 +315,12 @@ public class PermissionCommand extends Command {
             sender.sendMessage(new TextComponent("§7[§eHeliosPerms§7] " + message));
         else
             sender.sendMessage(new TextComponent(message));
+    }
+
+    private void sendClickableMessage(CommandSender sender, String message){
+        TextComponent textComponent = new TextComponent(message);
+        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(message).substring(2)));
+        sender.sendMessage(textComponent);
     }
 
     private String getRemainingTime(Long end) {

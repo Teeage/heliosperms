@@ -148,7 +148,7 @@ public class PlayerListener implements Listener {
         if (prefix.contains("%player%"))
             prefix = prefix.replace("%player%", "");
         if (prefix.length() > 16) {
-            System.out.println("[HeliosPerms] Du darfst bei Bukkit die Zeichen Länge von 16 Zeichen nicht überschreiten!");
+            System.out.println("[HeliosPerms] Du darfst bei Bukkit die Zeichenlänge von 16 Zeichen nicht überschreiten!");
             System.out.println(prefix);
             System.out.println("[HeliosPerms] Aktuell ist der Prefix " + prefix.length() + " Zeichen lang.");
             prefix = group.getColorCode();
