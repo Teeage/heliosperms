@@ -63,7 +63,7 @@ public class Main extends Plugin {
         administrator = cfg.getString("settings.administrator");
 
         try {
-            SQLConfig config = new SQLConfig(getDataFolder() + "/sql.json");
+            SQLConfig config = new SQLConfig("plugins//HeliosPerms//sql.json");
             SQLInfo sqlInfo = config.getSqlInfo();
             SQLClient client = new SQLClient(sqlInfo, "com.mysql.jdbc.Driver", "jdbc:mysql", 5);
             databaseHandler = new DatabaseHandler(client);
