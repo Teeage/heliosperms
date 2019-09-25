@@ -10,19 +10,24 @@ public class GroupChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private final UUID uuid;
-    private final int groupId;
+    private final int oldGroupId, newGroupId;
 
-    public GroupChangeEvent(UUID uuid, int groupId) {
+    public GroupChangeEvent(UUID uuid, int oldGroupId, int newGroupId) {
         this.uuid = uuid;
-        this.groupId = groupId;
+        this.oldGroupId = oldGroupId;
+        this.newGroupId = newGroupId;
     }
 
     public UUID getUniqueId() {
         return uuid;
     }
 
-    public int getGroupId() {
-        return groupId;
+    public int getNewGroupId() {
+        return newGroupId;
+    }
+
+    public int getOldGroupId() {
+        return oldGroupId;
     }
 
     @Override
