@@ -50,6 +50,7 @@ public class PlayerManager {
 
     public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration) {
         Long time = (1000L * 60 * 60 * 24 * duration);
+        int oldGroupId = permissionPlayer.getPermissionGroup().getGroupId();
         if (permissionPlayer.getPermissionGroup().equals(permissionGroup))
             permissionPlayer.setExpiration(permissionPlayer.getExpiration() + time);
         else {
@@ -57,17 +58,17 @@ public class PlayerManager {
             permissionPlayer.setExpiration(System.currentTimeMillis() + time);
         }
         update(permissionPlayer);
-        sendUpdateToSpigot(permissionPlayer.getUuid(), permissionGroup.getGroupId());
+        sendUpdateToSpigot(permissionPlayer.getUuid(), oldGroupId, permissionGroup.getGroupId());
     }
 
     public void update(PermissionPlayer permissionPlayer) {
         databaseHandler.updateUser(permissionPlayer.getUuid().toString(), permissionPlayer.getName(), permissionPlayer.getPermissionGroup().getGroupId(), permissionPlayer.getExpiration());
     }
 
-    public void sendUpdateToSpigot(UUID uuid, int groupId){
+    public void sendUpdateToSpigot(UUID uuid, int oldGroupId, int newGroupId){
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
         if (proxiedPlayer != null) {
-            BungeeUpdater.updateGroup(uuid.toString(), groupId);
+            BungeeUpdater.updateGroup(uuid.toString(), oldGroupId, newGroupId);
         }
     }
 

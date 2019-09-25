@@ -10,14 +10,15 @@ import net.md_5.bungee.api.config.ServerInfo;
 
 public class BungeeUpdater {
 
-    public static void updateGroup(String uuid, Integer groupId) {
+    public static void updateGroup(String uuid, Integer oldGroupId, Integer newGroupId) {
         for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(stream);
             try {
                 out.writeUTF("UpdateGroup");
                 out.writeUTF(uuid);
-                out.writeUTF(groupId.toString());
+                out.writeUTF(oldGroupId.toString());
+                out.writeUTF(newGroupId.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

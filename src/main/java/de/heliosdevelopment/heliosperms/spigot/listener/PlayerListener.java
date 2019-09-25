@@ -95,7 +95,7 @@ public class PlayerListener implements Listener {
         if (player != null) {
             Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
             if (permissionPlayerOptional.isPresent()){
-                permissionPlayerOptional.get().setPermissionGroup(playerManager.getGroupManager().getGroup(event.getGroupId()));
+                permissionPlayerOptional.get().setPermissionGroup(playerManager.getGroupManager().getGroup(event.getNewGroupId()));
                 setPrefix(player);
             }
         }

@@ -65,9 +65,10 @@ public class MessageListener implements PluginMessageListener {
         if (subchannel.equals("UpdateGroup")) {
             String uuid = in.readUTF();
             Player p = Bukkit.getPlayer(UUID.fromString(uuid));
-            String groupId = in.readUTF();
+            String oldGroupId = in.readUTF();
+            String newGroupId = in.readUTF();
             if (p != null) {
-                Bukkit.getPluginManager().callEvent(new GroupChangeEvent(player.getUniqueId(), Integer.valueOf(groupId)));
+                Bukkit.getPluginManager().callEvent(new GroupChangeEvent(player.getUniqueId(), Integer.valueOf(oldGroupId), Integer.valueOf(newGroupId)));
             }
         }
 

@@ -24,12 +24,13 @@ public class ExpirationHandler {
             for (PermissionPlayer permissionPlayer : playerManager.getPlayers()) {
                 if (permissionPlayer.getExpiration() == -1) continue;
                 if ((permissionPlayer.getExpiration() - System.currentTimeMillis()) <= 0) {
+                    int oldGroupId = permissionPlayer.getPermissionGroup().getGroupId();
                     permissionPlayer.setPermissionGroup(userGroup);
                     permissionPlayer.setExpiration(-1);
                     ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(permissionPlayer.getUuid());
                     if (proxiedPlayer != null)
                         Main.getInstance().getDatabaseHandler().updateUser(permissionPlayer.getUuid().toString(), proxiedPlayer.getName(), userGroup.getGroupId(), (long) -1);
-                    BungeeUpdater.updateGroup(permissionPlayer.getUuid().toString(), userGroup.getGroupId());
+                    BungeeUpdater.updateGroup(permissionPlayer.getUuid().toString(), oldGroupId, userGroup.getGroupId());
                 }
             }
         }, 30, 30, TimeUnit.MINUTES);
