@@ -76,8 +76,8 @@ public class DatabaseHandler {
     public void addPermission(String name, PermissionType type, String permission) {
         try (Connection connection = this.sqlClient.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `permissions` (`type`, `name`, `permission`) VALUES (?,?,?)");
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, type.toString());
+            preparedStatement.setString(1, type.toString());
+            preparedStatement.setString(2, name);
             preparedStatement.setString(3, permission);
             preparedStatement.execute();
             preparedStatement.close();
@@ -101,7 +101,7 @@ public class DatabaseHandler {
 
     public void addUser(String uuid, String name, int groupId, Long duration) {
         try (Connection connection = this.sqlClient.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `users` (`uuid`, `name`, `groupId`, `duration`) VALUES VALUES (?,?,?,?)");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `users` (`uuid`, `name`, `groupId`, `duration`) VALUES (?,?,?,?)");
             preparedStatement.setString(1, uuid);
             preparedStatement.setString(2, name);
             preparedStatement.setInt(3, groupId);
@@ -115,7 +115,7 @@ public class DatabaseHandler {
 
     public void updateUser(String uuid, String name, int groupId, Long duration) {
         try (Connection connection = this.sqlClient.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE `users` SET `name`=?, `groupId`=?, `duration`=?' WHERE `uuid`=?");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE `users` SET `name`=?, `groupId`=?, `duration`=? WHERE `uuid`=?");
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, groupId);
             preparedStatement.setString(3, duration.toString());
@@ -214,7 +214,7 @@ public class DatabaseHandler {
     public List<PermissionGroup> getGroups() {
         List<PermissionGroup> groups = new ArrayList<>();
         try (Connection connection = this.sqlClient.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("SSELECT * FROM `groups`");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `groups`");
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet != null)
                 while (resultSet.next()) {
