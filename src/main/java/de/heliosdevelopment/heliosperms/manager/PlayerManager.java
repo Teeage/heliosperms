@@ -4,6 +4,7 @@ import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.utils.TimeUnit;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -24,12 +25,12 @@ public class PlayerManager {
     }
 
     public PermissionPlayer loadPlayer(UUID uuid, String name, boolean bungee) {
-        String expiration = databaseHandler.getExpiration(uuid.toString()) == null ? String.valueOf(-1) : databaseHandler.getExpiration(uuid.toString());
+        long expiration = databaseHandler.getExpiration(uuid.toString()) == null ? -1 : databaseHandler.getExpiration(uuid.toString());
         PermissionGroup group = groupManager.getGroup(databaseHandler.getGroup(uuid.toString()));
         PermissionPlayer permissionPlayer = new PermissionPlayer(uuid, name,
                 group != null ? group : groupManager.getDefaultGroup(),
                 databaseHandler.getPermissions(uuid.toString(), PermissionType.USER),
-                Long.valueOf(expiration));
+                expiration);
         players.add(permissionPlayer);
         if (databaseHandler.getGroup(uuid.toString()) == -1 && bungee)
             databaseHandler.addUser(uuid.toString(), name, 20, (long) -1);
@@ -48,8 +49,8 @@ public class PlayerManager {
         return Optional.empty();
     }
 
-    public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration) {
-        Long time = (1000L * 60 * 60 * 24 * duration);
+    public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration, TimeUnit timeUnit) {
+        Long time = Long.valueOf(timeUnit.getMultiplier() * duration);
         int oldGroupId = permissionPlayer.getPermissionGroup().getGroupId();
         if (permissionPlayer.getPermissionGroup().equals(permissionGroup))
             permissionPlayer.setExpiration(permissionPlayer.getExpiration() + time);

@@ -7,6 +7,7 @@ import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.utils.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -56,7 +57,7 @@ public class PermissionCommand extends Command {
             sendMessage(sender, "§eMit /heliosperms help kannst du die Hilfe aufrufen.", true);
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("help")) {
-                sendClickableMessage(sender, "§7- §e/perms user (name) setgroup (group) (duration)");
+                sendClickableMessage(sender, "§7- §e/perms user (name) setgroup (group) (duration) (timeUnit)");
                 sendClickableMessage(sender, "§7- §e/perms user (name) getgroup");
                 sendClickableMessage(sender, "§7- §e/perms user (name) add (permission)");
                 sendClickableMessage(sender, "§7- §e/perms user (name) remove (permission)");
@@ -239,32 +240,7 @@ public class PermissionCommand extends Command {
                 }
             }
         } else if (args.length == 5) {
-            if (args[0].equalsIgnoreCase("user")) {
-                if (args[2].equalsIgnoreCase("setgroup")) {
-                    int duration;
-                    try {
-                        duration = Integer.valueOf(args[4]);
-                    } catch (NumberFormatException exception) {
-                        exception.printStackTrace();
-                        sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
-                        return;
-                    }
-                    String uuid = databaseHandler.getUuid(args[1]);
-                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[3]);
-                    if (group == null) {
-                        sendMessage(sender, "§cGruppe existiert nicht.", true);
-                        return;
-                    }
-                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
-                    if (!permissionPlayer.isPresent())
-                        permissionPlayer = Optional.of(playerManager.loadPlayer(UUID.fromString(uuid), args[1], true));
-                    if (permissionPlayer.isPresent()){
-                        playerManager.setGroup(permissionPlayer.get(), group, duration);
-                        sendMessage(sender, "§aDie Gruppe von §e"
-                                + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
-                    }
-                }
-            } else if (args[0].equalsIgnoreCase("group")) {
+            if (args[0].equalsIgnoreCase("group")) {
                 if (args[2].equalsIgnoreCase("edit")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
                     if (group == null) {
@@ -287,7 +263,40 @@ public class PermissionCommand extends Command {
                 }
             }
         } else if (args.length == 6) {
-            if (args[0].equalsIgnoreCase("addgroup")) {
+            if (args[0].equalsIgnoreCase("user")) {
+                if (args[2].equalsIgnoreCase("setgroup")) {
+                    int duration;
+                    try {
+                        duration = Integer.valueOf(args[4]);
+                    } catch (NumberFormatException exception) {
+                        exception.printStackTrace();
+                        sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
+                        return;
+                    }
+                    TimeUnit timeUnit = TimeUnit.getByName(args[5]);
+                    if (timeUnit == null) {
+                        sendMessage(sender, "§cDas ist keine gültige Zeiteinheit. Gültige Einheiten: ", true);
+                        StringBuilder builder = new StringBuilder(", ");
+                        for (TimeUnit unit : TimeUnit.values())
+                            builder.append(unit.getName());
+                        sendMessage(sender, "§e" + builder.toString(), true);
+                    }
+                    String uuid = databaseHandler.getUuid(args[1]);
+                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[3]);
+                    if (group == null) {
+                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        return;
+                    }
+                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
+                    if (!permissionPlayer.isPresent())
+                        permissionPlayer = Optional.of(playerManager.loadPlayer(UUID.fromString(uuid), args[1], true));
+                    if (permissionPlayer.isPresent()) {
+                        playerManager.setGroup(permissionPlayer.get(), group, duration, timeUnit);
+                        sendMessage(sender, "§aDie Gruppe von §e"
+                                + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("addgroup")) {
                 int groupId = -1;
                 try {
                     groupId = Integer.valueOf(args[1]);
@@ -317,7 +326,7 @@ public class PermissionCommand extends Command {
             sender.sendMessage(new TextComponent(message));
     }
 
-    private void sendClickableMessage(CommandSender sender, String message){
+    private void sendClickableMessage(CommandSender sender, String message) {
         TextComponent textComponent = new TextComponent(message);
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(message).substring(2)));
         sender.sendMessage(textComponent);
