@@ -21,13 +21,13 @@ public class DatabaseHandler {
 
     public boolean bootstrap() {
         try (Connection connection = this.sqlClient.getConnection()) {
-            PreparedStatement groups = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `groups` (`groupId` INT(9) NOT NULL,`name` VARCHAR(99) NOT NULL, `colorCode` VARCHAR(99) NOT NULL, `prefix` VARCHAR(99) NOT NULL, `parentGroup` INT(9) NOT NULL, PRIMARY KEY (`groupId`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+            PreparedStatement groups = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `groups` (`groupId` INT NOT NULL PRIMARY KEY,`name` VARCHAR(99) NOT NULL, `colorCode` VARCHAR(2) NOT NULL, `prefix` VARCHAR(99) NOT NULL, `parentGroup` INT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             groups.execute();
             groups.close();
-            PreparedStatement users = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(99) NOT NULL, `name` VARCHAR(99) NOT NULL, `groupId` INT(9) NOT NULL, `duration` VARCHAR(99) NOT NULL, PRIMARY KEY (`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+            PreparedStatement users = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36) NOT NULL, `name` VARCHAR(99) NOT NULL, `groupId` INT NOT NULL, `duration` BIGINT NOT NULL, PRIMARY KEY (`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             users.execute();
             users.close();
-            PreparedStatement permissions = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `permissions` (`type` VARCHAR(99) NOT NULL, `name` VARCHAR(99) NOT NULL NOT NULL, `permission` VARCHAR(99) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+            PreparedStatement permissions = connection.prepareStatement("CREATE TABLE IF NOT EXISTS  `permissions` (`id` int AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(99) NOT NULL, `name` VARCHAR(99) NOT NULL, `permission` VARCHAR(99) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             permissions.execute();
             permissions.close();
             return true;
@@ -154,14 +154,14 @@ public class DatabaseHandler {
         return groupId;
     }
 
-    public String getExpiration(String uuid) {
+    public Long getExpiration(String uuid) {
         try (Connection connection = this.sqlClient.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `duration` FROM `users` WHERE `uuid`=?");
             preparedStatement.setString(1, uuid);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet != null)
                 if (resultSet.next())
-                    return resultSet.getString("duration");
+                    return resultSet.getLong("duration");
             preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -218,10 +218,10 @@ public class DatabaseHandler {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet != null)
                 while (resultSet.next()) {
-                    Integer id = resultSet.getInt("groupId");
+                    int id = resultSet.getInt("groupId");
                     groups.add(new PermissionGroup(id, resultSet.getString("name"), resultSet.getString("prefix"),
                             resultSet.getString("colorCode"),
-                            resultSet.getInt("parentGroup"), getPermissions(id.toString(), PermissionType.GROUP)));
+                            resultSet.getInt("parentGroup"), getPermissions(String.valueOf(id), PermissionType.GROUP)));
                 }
             preparedStatement.close();
         } catch (SQLException e) {
