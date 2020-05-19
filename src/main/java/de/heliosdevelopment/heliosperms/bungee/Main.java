@@ -40,22 +40,12 @@ public class Main extends Plugin {
             }
 
         Configuration cfg = null;
-        if (!file.exists())
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         try {
             cfg = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert cfg != null;
-        if (!cfg.contains("settings.administrator"))
-            cfg.set("settings.administrator", "HierDeinenMinecraftNamenEintragen");
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(cfg, file);
+            if (!cfg.contains("settings.administrator")) {
+                cfg.set("settings.administrator", "HierDeinenMinecraftNamenEintragen");
+                ConfigurationProvider.getProvider(YamlConfiguration.class).save(cfg, file);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

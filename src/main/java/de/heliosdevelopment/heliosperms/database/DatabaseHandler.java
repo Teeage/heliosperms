@@ -24,7 +24,7 @@ public class DatabaseHandler {
             PreparedStatement groups = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `groups` (`groupId` INT NOT NULL PRIMARY KEY,`name` VARCHAR(99) NOT NULL, `colorCode` VARCHAR(2) NOT NULL, `prefix` VARCHAR(99) NOT NULL, `parentGroup` INT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             groups.execute();
             groups.close();
-            PreparedStatement users = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36) NOT NULL, `name` VARCHAR(99) NOT NULL, `groupId` INT NOT NULL, `duration` BIGINT NOT NULL, PRIMARY KEY (`uuid`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+            PreparedStatement users = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `users` (`uuid` VARCHAR(36) NOT NULL PRIMARY KEY, `name` VARCHAR(99) NOT NULL, `groupId` INT NOT NULL, `duration` BIGINT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
             users.execute();
             users.close();
             PreparedStatement permissions = connection.prepareStatement("CREATE TABLE IF NOT EXISTS  `permissions` (`id` int AUTO_INCREMENT PRIMARY KEY, `type` VARCHAR(99) NOT NULL, `name` VARCHAR(99) NOT NULL, `permission` VARCHAR(99) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;");

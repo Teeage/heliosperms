@@ -12,7 +12,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -83,7 +82,7 @@ public class PermissionCommand extends Command {
             if (args[0].equalsIgnoreCase("deleteGroup")) {
                 int groupId = -1;
                 try {
-                    groupId = Integer.valueOf(args[1]);
+                    groupId = Integer.parseInt(args[1]);
                 } catch (NumberFormatException exception) {
                     sendMessage(sender, "§7Bitte gebe eine Zahl an.", true);
                 }
@@ -267,7 +266,7 @@ public class PermissionCommand extends Command {
                 if (args[2].equalsIgnoreCase("setgroup")) {
                     int duration;
                     try {
-                        duration = Integer.valueOf(args[4]);
+                        duration = Integer.parseInt(args[4]);
                     } catch (NumberFormatException exception) {
                         exception.printStackTrace();
                         sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
@@ -299,14 +298,14 @@ public class PermissionCommand extends Command {
             } else if (args[0].equalsIgnoreCase("addgroup")) {
                 int groupId = -1;
                 try {
-                    groupId = Integer.valueOf(args[1]);
+                    groupId = Integer.parseInt(args[1]);
                 } catch (NumberFormatException exception) {
                     sendMessage(sender, "§7Ist das eine Zahl? Näh oder?", true);
                 }
                 if (groupId == -1)
                     return;
                 if (playerManager.getGroupManager().getGroup(groupId) == null) {
-                    databaseHandler.addGroup(Integer.valueOf(args[1]), args[2], "§" + args[3], args[4], Integer.valueOf(args[5]));
+                    databaseHandler.addGroup(Integer.parseInt(args[1]), args[2], "§" + args[3], args[4], Integer.parseInt(args[5]));
                     playerManager.getGroupManager().updateGroups();
                     sendMessage(sender, "§7Du hast die Gruppe §e" + args[2] + " §7erstellt.", true);
                 } else {

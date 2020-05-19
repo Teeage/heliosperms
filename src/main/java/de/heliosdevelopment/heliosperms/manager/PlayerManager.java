@@ -50,7 +50,7 @@ public class PlayerManager {
     }
 
     public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration, TimeUnit timeUnit) {
-        Long time = Long.valueOf(timeUnit.getMultiplier() * duration);
+        Long time = (long) (timeUnit.getMultiplier() * duration);
         int oldGroupId = permissionPlayer.getPermissionGroup().getGroupId();
         if (permissionPlayer.getPermissionGroup().equals(permissionGroup))
             permissionPlayer.setExpiration(permissionPlayer.getExpiration() + time);
