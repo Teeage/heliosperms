@@ -11,6 +11,17 @@
 
     <artifactId>heliosperms-api</artifactId>
 
+    <distributionManagement>
+        <repository>
+            <id>packagecloud-Teeage</id>
+            <url>packagecloud+https://packagecloud.io/Teeage/heliosdevelopment</url>
+        </repository>
+        <snapshotRepository>
+            <id>packagecloud-Teeage</id>
+            <url>packagecloud+https://packagecloud.io/Teeage/heliosdevelopment</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -22,6 +33,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>io.packagecloud.maven.wagon</groupId>
+                <artifactId>maven-packagecloud-wagon</artifactId>
+                <version>0.0.6</version>
+            </extension>
+        </extensions>
     </build>
 
 </project>
