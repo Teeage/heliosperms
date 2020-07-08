@@ -172,7 +172,7 @@ public class PermissionCommand extends Command {
                 } else if (args[2].equalsIgnoreCase("info")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
                     if (group == null) {
-                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
                     sendMessage(sender, "", false);
@@ -191,8 +191,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (!databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
-                        databaseHandler.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
+                    if (!databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase())) {
+                        databaseHandler.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase());
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
                     } else
@@ -203,8 +203,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3])) {
-                        databaseHandler.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3]);
+                    if (databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase())) {
+                        databaseHandler.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase());
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich entfernt.", true);
                     }
@@ -216,8 +216,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
-                    if (!databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
-                        databaseHandler.addPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
+                    if (!databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase())) {
+                        databaseHandler.addPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase());
                         sendMessage(sender, "§aPermission wurde gesetzt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
@@ -227,11 +227,11 @@ public class PermissionCommand extends Command {
                 } else if (args[2].equalsIgnoreCase("remove")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
                     if (group == null) {
-                        sendMessage(sender, "§cGruppe existiert nicht.", true);
+                        sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
-                    if (databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3])) {
-                        databaseHandler.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3]);
+                    if (databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase())) {
+                        databaseHandler.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase());
                         sendMessage(sender, "§aPermission wurde entfernt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);

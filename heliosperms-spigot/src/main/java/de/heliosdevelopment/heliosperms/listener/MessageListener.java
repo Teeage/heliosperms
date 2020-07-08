@@ -12,7 +12,6 @@ import de.heliosdevelopment.heliosperms.utils.PermissionType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
@@ -33,34 +32,29 @@ public class MessageListener implements PluginMessageListener {
         }
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subchannel = in.readUTF();
-        new BukkitRunnable() {
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+            if (subchannel.equals("UpdatePermissions")) {
+                PermissionType type = PermissionType.valueOf(in.readUTF().toUpperCase());
+                if (type == PermissionType.GROUP)
+                    HeliosPerms.getInstance().getGroupManager().updatePermissions();
+                else
+                    HeliosPerms.getInstance().getPlayerManager().updatePermissions();
 
-            @Override
-            public void run() {
-                if (subchannel.equals("UpdatePermissions")) {
-                    PermissionType type = PermissionType.valueOf(in.readUTF().toUpperCase());
-                    if (type == PermissionType.GROUP)
-                        HeliosPerms.getInstance().getGroupManager().updatePermissions();
-                    else
-                        HeliosPerms.getInstance().getPlayerManager().updatePermissions();
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());
 
-                    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                        Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(onlinePlayer.getUniqueId());
+                    if (!permissionPlayer.isPresent()) return;
 
-                        if (!permissionPlayer.isPresent()) return;
-
-
-                        try {
-                            Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
-                            field.setAccessible(true);
-                            field.set(onlinePlayer, new Permissible(onlinePlayer, permissionPlayer.get()));
-                        } catch (NoSuchFieldException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        Field field = Main.getInstance().getNMSClass("entity.CraftHumanEntity").getDeclaredField("perm");
+                        field.setAccessible(true);
+                        field.set(onlinePlayer, new Permissible(onlinePlayer, permissionPlayer.get()));
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        }.runTaskLater(Main.getInstance(), 100);
+        }, 100);
         if (subchannel.equals("UpdateGroup")) {
             String uuid = in.readUTF();
             Player target = Bukkit.getPlayer(UUID.fromString(uuid));
@@ -70,7 +64,6 @@ public class MessageListener implements PluginMessageListener {
                 Bukkit.getPluginManager().callEvent(new GroupChangeEvent(player.getUniqueId(), Integer.parseInt(oldGroupId), Integer.parseInt(newGroupId)));
             }
         }
-
 
     }
 }

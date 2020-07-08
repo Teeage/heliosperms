@@ -128,7 +128,6 @@ public class PlayerListener implements Listener {
                 color = board1.registerNewTeam(Integer.valueOf(group.getGroupId()).toString());
                 color.setPrefix(getPrefix(group));
             }
-            //┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃
             color.addEntry(p.getName());
             pl.setScoreboard(board1);
         }

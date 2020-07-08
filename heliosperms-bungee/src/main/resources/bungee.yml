@@ -1,4 +1,4 @@
-name: Bungee${project.artifactId}
+name: HeliosPerms
 version: ${project.version}
 author: Teeage
 main: ${project.groupId}.heliosperms.bungee.Main
