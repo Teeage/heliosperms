@@ -41,10 +41,19 @@ public class GroupManager {
         return null;
     }
 
+    /**
+     *
+     * @return the default group for new user
+     */
     public PermissionGroup getDefaultGroup() {
         return defaultGroup;
     }
 
+    /**
+     *
+     * @param name of the group
+     * @return PermissionGroup object
+     */
     public PermissionGroup getGroup(String name) {
         for (PermissionGroup group : groups) {
             if (group.getName().toLowerCase().equalsIgnoreCase(name.toLowerCase()))
@@ -53,6 +62,12 @@ public class GroupManager {
         return null;
     }
 
+    /**
+     * Delete a permission group
+     *
+     * @param permissionGroup
+     * @return if the group was successfully deleted
+     */
     public boolean removeGroup(PermissionGroup permissionGroup) {
         if (permissionGroup.equals(defaultGroup))
             return false;
@@ -62,15 +77,25 @@ public class GroupManager {
 
     }
 
+    /**
+     * Updates the cached by the groups from the database
+     */
     public void updateGroups() {
         groups = databaseHandler.getGroups();
     }
 
+    /**
+     * Updates the permissions from all groups
+     */
     public void updatePermissions() {
         for (PermissionGroup group : groups)
             group.setPermissions(databaseHandler.getPermissions(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP));
     }
 
+    /**
+     *
+     * @return a list from all groups
+     */
     public List<PermissionGroup> getGroups() {
         return groups;
     }

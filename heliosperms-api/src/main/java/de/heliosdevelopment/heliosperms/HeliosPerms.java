@@ -7,21 +7,22 @@ import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.utils.PermissionType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class HeliosPerms {
     private static HeliosPerms instance;
-    private final DatabaseHandler connection;
-    private final boolean isBungee;
+    private final DatabaseHandler databaseHandler;
+    private final boolean bungeecord;
     private final PlayerManager playerManager;
 
-    public HeliosPerms(DatabaseHandler connection, PlayerManager playerManager, boolean isBungee) {
+    public HeliosPerms(DatabaseHandler databaseHandler, PlayerManager playerManager, boolean bungeecord) {
         instance = this;
-        this.connection = connection;
+        this.databaseHandler = databaseHandler;
         this.playerManager = playerManager;
-        this.isBungee = isBungee;
+        this.bungeecord = bungeecord;
     }
 
 
@@ -29,19 +30,39 @@ public class HeliosPerms {
         return instance;
     }
 
-    public Boolean getIsBungee() {
-        return isBungee;
+    /**
+     *
+     * @return if this instance runs on a bungeecord server
+     */
+    public boolean isBungee() {
+        return bungeecord;
     }
 
     /**
-     * Gets the permissions of a player. Its is not required that the player is
-     * online.
+     * Get the player permissions of a player.
      *
      * @param uuid the uuid of the player
-     * @return List with the permissions
+     * @return a list with the per player permissions
      */
     public List<String> getPlayerPermissions(UUID uuid) {
-        return connection.getPermissions(uuid.toString(), PermissionType.USER);
+        return databaseHandler.getPermissions(uuid.toString(), PermissionType.USER);
+    }
+
+    /**
+     * Get the all permissions of a player.
+     *
+     * @param uuid the uuid of the player
+     * @return a list with all permissions of a player
+     */
+    public List<String> getAllPermissions(UUID uuid) {
+        List<String> permissions = new ArrayList<>();
+        PermissionGroup permissionGroup = getGroup(databaseHandler.getGroup(uuid.toString()));
+        if(permissionGroup != null) {
+            permissions.addAll(permissionGroup.getAllPermissions());
+        }
+        permissions.addAll(databaseHandler.getPermissions(uuid.toString(), PermissionType.USER));
+
+        return permissions;
     }
 
     /**
@@ -54,22 +75,17 @@ public class HeliosPerms {
         Optional<PermissionPlayer> player = playerManager.getPlayer(uuid);
         if (player.isPresent())
             return player.get().getPermissionGroup();
-        return playerManager.getGroupManager().getGroup(connection.getGroup(uuid.toString()));
-
-
+        return playerManager.getGroupManager().getGroup(databaseHandler.getGroup(uuid.toString()));
     }
 
     /**
-     * Gets the name and color of a group by the group name
+     * Get the group of a player.
      *
-     * @param name of the group
-     * @return String with color and name of the group
+     * @param groupId the id from a group
+     * @return the group with the given id
      */
-    public String getGroupName(String name) {
-        PermissionGroup group = playerManager.getGroupManager().getGroup(name);
-        if (group != null)
-            return group.getColorCode() + group.getName();
-        return "";
+    public PermissionGroup getGroup(int groupId) {
+        return getGroupManager().getGroup(groupId);
     }
 
     public GroupManager getGroupManager() {

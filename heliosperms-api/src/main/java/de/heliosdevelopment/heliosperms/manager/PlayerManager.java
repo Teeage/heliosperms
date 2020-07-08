@@ -26,6 +26,14 @@ public class PlayerManager {
         this.defaultGroup = groupManager.getGroup(20);
     }
 
+    /**
+     * Load a player from the database
+     *
+     * @param uuid of a player
+     * @param name of a player
+     * @param bungee if this is a bungeecord server
+     * @return the permission player object
+     */
     public PermissionPlayer loadPlayer(UUID uuid, String name, boolean bungee) {
         long expiration = databaseHandler.getExpiration(uuid.toString()) == null ? -1 : databaseHandler.getExpiration(uuid.toString());
         PermissionGroup group = groupManager.getGroup(databaseHandler.getGroup(uuid.toString()));
@@ -39,11 +47,21 @@ public class PlayerManager {
         return permissionPlayer;
     }
 
+    /**
+     * Unload a player
+     *
+     * @param uuid of the player
+     */
     public void unloadPlayer(UUID uuid) {
         Optional<PermissionPlayer> permissionPlayer = getPlayer(uuid);
         permissionPlayer.ifPresent(players::remove);
     }
 
+    /**
+     *
+     * @param uuid
+     * @return
+     */
     public Optional<PermissionPlayer> getPlayer(UUID uuid) {
         for (PermissionPlayer permissionPlayer : players)
             if (permissionPlayer.getUuid().equals(uuid))
@@ -51,6 +69,14 @@ public class PlayerManager {
         return Optional.empty();
     }
 
+    /**
+     * Set the group of a player
+     *
+     * @param permissionPlayer
+     * @param permissionGroup
+     * @param duration
+     * @param timeUnit
+     */
     public void setGroup(PermissionPlayer permissionPlayer, PermissionGroup permissionGroup, int duration, TimeUnit timeUnit) {
         Long time = (long) (timeUnit.getMultiplier() * duration);
         int oldGroupId = permissionPlayer.getPermissionGroup().getGroupId();
@@ -64,10 +90,22 @@ public class PlayerManager {
         sendUpdateToSpigot(permissionPlayer.getUuid(), oldGroupId, permissionGroup.getGroupId());
     }
 
+    /**
+     * Send a user update to the database
+     *
+     * @param permissionPlayer
+     */
     public void update(PermissionPlayer permissionPlayer) {
         databaseHandler.updateUser(permissionPlayer.getUuid().toString(), permissionPlayer.getName(), permissionPlayer.getPermissionGroup().getGroupId(), permissionPlayer.getExpiration());
     }
 
+    /**
+     * Send an group update to the spigot servers
+     *
+     * @param uuid
+     * @param oldGroupId
+     * @param newGroupId
+     */
     public void sendUpdateToSpigot(UUID uuid, int oldGroupId, int newGroupId) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
         if (proxiedPlayer != null) {
@@ -75,6 +113,9 @@ public class PlayerManager {
         }
     }
 
+    /**
+     * Update all per player permissions
+     */
     public void updatePermissions() {
         for (PermissionPlayer permissionPlayer : players)
             permissionPlayer.setPermissions(databaseHandler.getPermissions(permissionPlayer.getUuid().toString(), PermissionType.USER));
