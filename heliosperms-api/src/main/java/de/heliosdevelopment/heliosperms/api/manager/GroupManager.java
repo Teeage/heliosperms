@@ -1,11 +1,10 @@
-package de.heliosdevelopment.heliosperms.manager;
+package de.heliosdevelopment.heliosperms.api.manager;
 
-import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
-import de.heliosdevelopment.heliosperms.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.api.HeliosPerms;
+import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class GroupManager {
@@ -14,21 +13,19 @@ public class GroupManager {
     private final DatabaseHandler databaseHandler;
     private final PermissionGroup defaultGroup;
 
-    public GroupManager(DatabaseHandler databaseHandler) {
+    public GroupManager(DatabaseHandler databaseHandler, boolean bungeecord) {
         this.databaseHandler = databaseHandler;
         this.groups = databaseHandler.getGroups();
-        if (getGroup(20) == null) {
-            groups.add(new PermissionGroup(20, "User", "User", "§7", -31, Collections.singletonList("")));
-            databaseHandler.addGroup(20, "User", "§7", "User", -31);
-            groups.add(new PermissionGroup(1, "Administrator", "Administrator", "§c",
-                    20, Arrays.asList("bukkit.*", "minecraft.*", "heliosperms.admin")));
+        if (groups.isEmpty() && bungeecord) {
+            databaseHandler.addGroup(99, "User", "§7", "User", null, true);
             databaseHandler.addGroup(1, "Administrator", "§c", "Administrator",
-                    20);
+                    99, false);
             databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "bukkit.*");
             databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "minecraft.*");
             databaseHandler.addPermission(String.valueOf(1), PermissionType.GROUP, "heliosperms.*");
+            this.groups = databaseHandler.getGroups();
         }
-        defaultGroup = getGroup(20);
+        defaultGroup = getInitialDefaultGroup();
         if (defaultGroup == null)
             System.out.println("[HeliosPerms] Das System konnte die default Gruppe nicht finden.");
     }
@@ -41,8 +38,15 @@ public class GroupManager {
         return null;
     }
 
+    private PermissionGroup getInitialDefaultGroup() {
+        for (PermissionGroup permissionGroup : groups) {
+            if (permissionGroup.isDefaultGroup())
+                return permissionGroup;
+        }
+        return null;
+    }
+
     /**
-     *
      * @return the default group for new user
      */
     public PermissionGroup getDefaultGroup() {
@@ -50,7 +54,6 @@ public class GroupManager {
     }
 
     /**
-     *
      * @param name of the group
      * @return PermissionGroup object
      */
@@ -93,7 +96,6 @@ public class GroupManager {
     }
 
     /**
-     *
      * @return a list from all groups
      */
     public List<PermissionGroup> getGroups() {

@@ -1,6 +1,6 @@
-package de.heliosdevelopment.heliosperms.manager;
+package de.heliosdevelopment.heliosperms.api.manager;
 
-import de.heliosdevelopment.heliosperms.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 

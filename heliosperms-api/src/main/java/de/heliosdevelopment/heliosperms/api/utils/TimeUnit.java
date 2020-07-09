@@ -1,4 +1,4 @@
-package de.heliosdevelopment.heliosperms.utils;
+package de.heliosdevelopment.heliosperms.api.utils;
 
 public enum TimeUnit {
     MINUTES("Minuten", 1000 * 60), HOURS("Stunden", 1000 * 60 * 60), DAYS("Tage", 1000 * 60 * 60 * 24), WEEKS("Wochen", 1000 * 60 * 60 * 7);
@@ -12,9 +12,10 @@ public enum TimeUnit {
     }
 
     public static TimeUnit getByName(String name) {
-        for (TimeUnit timeUnit : values())
-            if (timeUnit.getName().equalsIgnoreCase(name))
+        for (TimeUnit timeUnit : values()) {
+            if (timeUnit.getName().equalsIgnoreCase(name) || timeUnit.name().equalsIgnoreCase(name))
                 return timeUnit;
+        }
         return null;
     }
 

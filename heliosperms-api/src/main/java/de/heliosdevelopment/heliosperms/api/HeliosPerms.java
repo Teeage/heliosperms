@@ -1,11 +1,11 @@
-package de.heliosdevelopment.heliosperms;
+package de.heliosdevelopment.heliosperms.api;
 
-import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.manager.GroupManager;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
-import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
-import de.heliosdevelopment.heliosperms.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.api.manager.GroupManager;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
+import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class HeliosPerms {
      */
     public List<String> getAllPermissions(UUID uuid) {
         List<String> permissions = new ArrayList<>();
-        PermissionGroup permissionGroup = getGroup(databaseHandler.getGroup(uuid.toString()));
+        PermissionGroup permissionGroup = getGroup(databaseHandler.getGroup(uuid));
         if(permissionGroup != null) {
             permissions.addAll(permissionGroup.getAllPermissions());
         }
@@ -75,7 +75,7 @@ public class HeliosPerms {
         Optional<PermissionPlayer> player = playerManager.getPlayer(uuid);
         if (player.isPresent())
             return player.get().getPermissionGroup();
-        return playerManager.getGroupManager().getGroup(databaseHandler.getGroup(uuid.toString()));
+        return playerManager.getGroupManager().getGroup(databaseHandler.getGroup(uuid));
     }
 
     /**

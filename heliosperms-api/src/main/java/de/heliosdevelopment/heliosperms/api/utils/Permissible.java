@@ -1,4 +1,4 @@
-package de.heliosdevelopment.heliosperms.utils;
+package de.heliosdevelopment.heliosperms.api.utils;
 
 
 import org.bukkit.entity.Player;

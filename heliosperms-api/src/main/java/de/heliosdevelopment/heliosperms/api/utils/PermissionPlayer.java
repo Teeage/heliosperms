@@ -1,4 +1,4 @@
-package de.heliosdevelopment.heliosperms.utils;
+package de.heliosdevelopment.heliosperms.api.utils;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,13 +11,10 @@ public class PermissionPlayer {
     private List<String> permissions;
     private long expiration;
 
-    public PermissionPlayer(UUID uuid, String name, PermissionGroup permissionGroup, List<String> permissions, long expiration, PermissionGroup defaultGroup) {
+    public PermissionPlayer(UUID uuid, String name, PermissionGroup permissionGroup, List<String> permissions, long expiration) {
         this.uuid = uuid;
         this.name = name;
-        if (permissionGroup == null)
-            this.permissionGroup = defaultGroup;
-        else
-            this.permissionGroup = permissionGroup;
+        this.permissionGroup = permissionGroup;
         this.permissions = permissions;
         this.expiration = expiration;
     }
@@ -60,11 +57,21 @@ public class PermissionPlayer {
         if (permissions.contains("*")) return true;
         if (permissions.contains(permission.toLowerCase())) return true;
         String[] block = permission.split("\\.");
-        for(int i = 0; i < block.length; i++){
+        for (int i = 0; i < block.length; i++) {
             String adminPermission = block[i] + ".*";
             if (adminPermission != null && permissions.contains(adminPermission.toLowerCase()))
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "PermissionPlayer{" +
+                "uuid=" + uuid.toString() +
+                ", name='" + name + '\'' +
+                ", permissionGroupId=" + permissionGroup.getGroupId() +
+                ", expiration=" + expiration +
+                '}';
     }
 }
