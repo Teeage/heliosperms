@@ -1,14 +1,14 @@
-package de.heliosdevelopment.heliosperms.listener;
+package de.heliosdevelopment.heliosperms.spigot.listener;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import de.heliosdevelopment.heliosperms.HeliosPerms;
-import de.heliosdevelopment.heliosperms.events.GroupChangeEvent;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.Main;
-import de.heliosdevelopment.heliosperms.utils.Permissible;
-import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
-import de.heliosdevelopment.heliosperms.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.api.HeliosPerms;
+import de.heliosdevelopment.heliosperms.spigot.events.GroupChangeEvent;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.spigot.Main;
+import de.heliosdevelopment.heliosperms.api.utils.Permissible;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -53,17 +53,15 @@ public class MessageListener implements PluginMessageListener {
                         e.printStackTrace();
                     }
                 }
+            } else if (subchannel.equals("UpdateGroup")) {
+                String uuid = in.readUTF();
+                Player target = Bukkit.getPlayer(UUID.fromString(uuid));
+                String oldGroupId = in.readUTF();
+                String newGroupId = in.readUTF();
+                if (target != null) {
+                    Bukkit.getPluginManager().callEvent(new GroupChangeEvent(player.getUniqueId(), Integer.parseInt(oldGroupId), Integer.parseInt(newGroupId)));
+                }
             }
         }, 100);
-        if (subchannel.equals("UpdateGroup")) {
-            String uuid = in.readUTF();
-            Player target = Bukkit.getPlayer(UUID.fromString(uuid));
-            String oldGroupId = in.readUTF();
-            String newGroupId = in.readUTF();
-            if (target != null) {
-                Bukkit.getPluginManager().callEvent(new GroupChangeEvent(player.getUniqueId(), Integer.parseInt(oldGroupId), Integer.parseInt(newGroupId)));
-            }
-        }
-
     }
 }

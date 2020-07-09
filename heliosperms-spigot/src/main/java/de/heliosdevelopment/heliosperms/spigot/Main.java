@@ -1,10 +1,11 @@
-package de.heliosdevelopment.heliosperms;
+package de.heliosdevelopment.heliosperms.spigot;
 
-import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.manager.GroupManager;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.listener.MessageListener;
-import de.heliosdevelopment.heliosperms.listener.PlayerListener;
+import de.heliosdevelopment.heliosperms.api.HeliosPerms;
+import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
+import de.heliosdevelopment.heliosperms.api.manager.GroupManager;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.spigot.listener.MessageListener;
+import de.heliosdevelopment.heliosperms.spigot.listener.PlayerListener;
 import de.heliosdevelopment.sqlconnector.SQLClient;
 import de.heliosdevelopment.sqlconnector.SQLInfo;
 import de.heliosdevelopment.sqlconnector.util.SQLConfig;
@@ -41,7 +42,7 @@ public class Main extends JavaPlugin {
                 System.out.println("[HeliosPerms] Could not connect to your mysql database.");
             }
 
-            GroupManager groupManager = new GroupManager(databaseHandler);
+            GroupManager groupManager = new GroupManager(databaseHandler, false);
             PlayerManager playerManager = new PlayerManager(databaseHandler, groupManager);
             new HeliosPerms(databaseHandler, playerManager, false);
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "HeliosPerms", new MessageListener(playerManager));

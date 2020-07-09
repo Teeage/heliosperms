@@ -1,12 +1,12 @@
-package de.heliosdevelopment.heliosperms.listener;
+package de.heliosdevelopment.heliosperms.spigot.listener;
 
 
-import de.heliosdevelopment.heliosperms.events.GroupChangeEvent;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.Main;
-import de.heliosdevelopment.heliosperms.utils.Permissible;
-import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
-import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
+import de.heliosdevelopment.heliosperms.spigot.events.GroupChangeEvent;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.spigot.Main;
+import de.heliosdevelopment.heliosperms.api.utils.Permissible;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -94,7 +94,7 @@ public class PlayerListener implements Listener {
         Player player = Bukkit.getPlayer(event.getUniqueId());
         if (player != null) {
             Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
-            if (permissionPlayerOptional.isPresent()){
+            if (permissionPlayerOptional.isPresent()) {
                 permissionPlayerOptional.get().setPermissionGroup(playerManager.getGroupManager().getGroup(event.getNewGroupId()));
                 setPrefix(player);
             }
@@ -110,6 +110,8 @@ public class PlayerListener implements Listener {
             Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
             if (!permissionPlayerOptional.isPresent()) continue;
             PermissionGroup group = permissionPlayerOptional.get().getPermissionGroup();
+            if (group == null)
+                return;
             Team color = board.getTeam(Integer.valueOf(group.getGroupId()).toString());
             if (color == null) {
                 color = board.registerNewTeam(Integer.valueOf(group.getGroupId()).toString());

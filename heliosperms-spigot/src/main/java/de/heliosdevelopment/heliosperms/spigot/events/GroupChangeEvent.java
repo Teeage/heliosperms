@@ -1,4 +1,4 @@
-package de.heliosdevelopment.heliosperms.events;
+package de.heliosdevelopment.heliosperms.spigot.events;
 
 
 import org.bukkit.event.Event;

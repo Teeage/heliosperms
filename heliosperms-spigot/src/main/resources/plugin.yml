@@ -1,4 +1,4 @@
 name: HeliosPerms-spigot-bridge
 version: ${project.version}
 author: Teeage
-main: ${project.groupId}.heliosperms.spigot.Main
+main: de.heliosdevelopment.heliosperms.spigot.Main
