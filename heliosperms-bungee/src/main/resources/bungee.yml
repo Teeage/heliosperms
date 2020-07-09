@@ -1,4 +1,4 @@
 name: HeliosPerms
 version: ${project.version}
 author: Teeage
-main: ${project.groupId}.heliosperms.bungee.Main
+main: de.heliosdevelopment.heliosperms.bungee.Main

@@ -1,13 +1,13 @@
 package de.heliosdevelopment.heliosperms.bungee.commands;
 
 import de.heliosdevelopment.heliosperms.bungee.Main;
-import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.manager.BungeeUpdater;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
-import de.heliosdevelopment.heliosperms.utils.PermissionGroup;
-import de.heliosdevelopment.heliosperms.utils.PermissionPlayer;
-import de.heliosdevelopment.heliosperms.utils.PermissionType;
-import de.heliosdevelopment.heliosperms.utils.TimeUnit;
+import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
+import de.heliosdevelopment.heliosperms.api.manager.BungeeUpdater;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
+import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
+import de.heliosdevelopment.heliosperms.api.utils.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -62,8 +62,8 @@ public class PermissionCommand extends Command {
                 sendClickableMessage(sender, "§7- §e/perms user (name) remove (permission)");
                 sendClickableMessage(sender, "§7- §e/perms user (name) list");
                 sendClickableMessage(sender, "§7- §e/perms groups");
-                sendClickableMessage(sender, "§7- §e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId)");
-                sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20§7\"", false);
+                sendClickableMessage(sender, "§7- §e/perms addgroup (id) (name) (chatColor) (prefix) §e(parentGroupId) (defaultGroup)");
+                sendMessage(sender, "§aExample: §7\"§7/perms addgroup 2 Developer b Dev 20 false§7\"", false);
                 sendClickableMessage(sender, "§7- §e/perms deleteGroup (id)");
                 sendClickableMessage(sender, "§7- §e/perms group (name) add (permission)");
                 sendClickableMessage(sender, "§7- §e/perms group (name) remove (permission)");
@@ -76,7 +76,8 @@ public class PermissionCommand extends Command {
                     sendMessage(sender, "§cKonnte keine Gruppe finden.", true);
                 sendMessage(sender, "§7Es existieren folgende Gruppen:", true);
                 for (PermissionGroup group : playerManager.getGroupManager().getGroups())
-                    sendMessage(sender, "§7- " + group.getColorCode() + group.getName() + " | §7ID: §e" + group.getGroupId(), false);
+                    sendMessage(sender, "§7- " + group.getColorCode() + group.getName() + " | §7ID: §e"
+                            + group.getGroupId(), false);
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("deleteGroup")) {
@@ -85,22 +86,23 @@ public class PermissionCommand extends Command {
                     groupId = Integer.parseInt(args[1]);
                 } catch (NumberFormatException exception) {
                     sendMessage(sender, "§7Bitte gebe eine Zahl an.", true);
-                }
-                if (groupId == -1)
                     return;
+                }
                 PermissionGroup permissionGroup = playerManager.getGroupManager().getGroup(groupId);
                 if (permissionGroup != null) {
                     for (PermissionGroup group : playerManager.getGroupManager().getGroups()) {
-                        if (group.getParentGroup() == groupId) {
+                        if (group.getParentGroup()!= null && group.getParentGroup() == groupId) {
                             PermissionGroup parent = playerManager.getGroupManager().getGroup(group.getParentGroup());
                             group.setParentGroup(parent != null ? parent.getParentGroup() : -31);
                         }
                     }
                     if (playerManager.getGroupManager().removeGroup(permissionGroup))
-                        sendMessage(sender, "§7Du hast die Gruppe §a" + permissionGroup.getName() + " §7entfernt.", true);
+                        sendMessage(sender, "§7Du hast die Gruppe §a" + permissionGroup.getName() + " §7entfernt.",
+                                true);
                     else {
                         sendMessage(sender, "§7Du kannst die default Gruppe nicht entfernen.", true);
-                        sendMessage(sender, "§7Du kannst sie jedoch mit /perms group (name) §7edit §7(key) §7(value) §7bearbeiten.", true);
+                        sendMessage(sender, "§7Du kannst sie jedoch mit /perms group (name) §7edit §7(key) §7(value) §7bearbeiten.",
+                                true);
                     }
 
                 } else
@@ -112,7 +114,8 @@ public class PermissionCommand extends Command {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target == null) return;
                     sendMessage(sender, "§7Die Permissions von §a" + target.getName() + " §7:", true);
-                    for (String s : databaseHandler.getPermissions(target.getUniqueId().toString(), PermissionType.USER))
+                    for (String s : databaseHandler.getPermissions(target.getUniqueId().toString(),
+                            PermissionType.USER))
                         sendMessage(sender, "§7- " + s, false);
                 } else if (args[2].equalsIgnoreCase("getgroup")) {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
@@ -124,10 +127,12 @@ public class PermissionCommand extends Command {
                     if (permissionPlayer.isPresent()) {
                         if (permissionPlayer.get().getPermissionGroup() != null) {
                             sendMessage(sender,
-                                    "§7Der Spieler ist in der Gruppe " + permissionPlayer.get().getPermissionGroup().getColorCode()
+                                    "§7Der Spieler ist in der Gruppe "
+                                            + permissionPlayer.get().getPermissionGroup().getColorCode()
                                             + permissionPlayer.get().getPermissionGroup().getName(), true);
 
-                            sendMessage(sender, "§7Er besitzt sie noch " + getRemainingTime(permissionPlayer.get().getExpiration()), true);
+                            sendMessage(sender, "§7Er besitzt sie noch "
+                                    + getRemainingTime(permissionPlayer.get().getExpiration()), true);
                         }
                     }
 
@@ -139,7 +144,8 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    sendMessage(sender, "§7§m-------------------§7[§eHeliosPerms§7]§m------------------", false);
+                    sendMessage(sender, "§7§m-------------------§7[§eHeliosPerms§7]§m------------------",
+                            false);
                     sendMessage(sender, "§aGruppe: " + group.getColorCode() + group.getName(), false);
                     if (group.getPermissions().size() != 0) {
                         sendMessage(sender, "§eGruppenpermissions:", false);
@@ -153,20 +159,23 @@ public class PermissionCommand extends Command {
                             sendMessage(sender, "§7" + pperm, false);
                     }
 
-                    sendMessage(sender, "§7§m-----------------------------------------------------", false);
+                    sendMessage(sender, "§7§m-----------------------------------------------------",
+                            false);
                 } else if (args[2].equalsIgnoreCase("users")) {
                     PermissionGroup group = playerManager.getGroupManager().getGroup(args[1]);
                     if (group == null) {
                         sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    sendMessage(sender, "§7§m-------------------§7[§eHeliosPerms§7]§m------------------", false);
+                    sendMessage(sender, "§7§m-------------------§7[§eHeliosPerms§7]§m------------------",
+                            false);
                     sendMessage(sender, "§aGruppe: " + group.getColorCode() + group.getName(), false);
                     sendMessage(sender, "§eUsers: ", false);
                     if (group.getName().toLowerCase().equals("user"))
-                        sendMessage(sender, String.valueOf(databaseHandler.getUsers(group.getGroupId()).size()), false);
+                        sendMessage(sender, String.valueOf(databaseHandler.getUsersByGroup(group.getGroupId()).size()),
+                                false);
                     else
-                        for (String s : databaseHandler.getUsers(group.getGroupId()))
+                        for (String s : databaseHandler.getUsersByGroup(group.getGroupId()))
                             sendMessage(sender, "§7" + s, false);
                     sendMessage(sender, "§7§m-----------------------------------------------------", false);
                 } else if (args[2].equalsIgnoreCase("info")) {
@@ -176,10 +185,12 @@ public class PermissionCommand extends Command {
                         return;
                     }
                     sendMessage(sender, "", false);
-                    sendMessage(sender, "§eInformationen:", false);
+                    sendMessage(sender, "§eGruppen Informationen:", false);
                     sendMessage(sender, "§7ID: §a" + group.getGroupId(), false);
                     sendMessage(sender, "§7Name: §a" + group.getColorCode() + group.getName(), false);
-                    sendMessage(sender, "§7ParentGroupID: §a" + group.getParentGroup(), false);
+                    sendMessage(sender, "§7Name: §a" + group.getColorCode() + group.getName(), false);
+                    sendMessage(sender, "§7ParentGroupID: §a" + (group.getParentGroup() != null ?
+                            group.getParentGroup() : "Es existiert keine uebergeordnete Gruppe"), false);
                     sendMessage(sender, "", false);
                 }
             }
@@ -191,10 +202,13 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (!databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase())) {
-                        databaseHandler.addPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase());
+                    if (!databaseHandler.hasPermission(target.getUniqueId().toString(),
+                            PermissionType.USER, args[3].toLowerCase())) {
+                        databaseHandler.addPermission(target.getUniqueId().toString(),
+                                PermissionType.USER, args[3].toLowerCase());
                         BungeeUpdater.updatePermissions(PermissionType.USER);
-                        sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.", true);
+                        sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich hinzugefügt.",
+                                true);
                     } else
                         sendMessage(sender, "§cPermission existiert bereits.", true);
                 } else if (args[2].equalsIgnoreCase("remove")) {
@@ -203,8 +217,10 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDer Spieler existiert nicht.", true);
                         return;
                     }
-                    if (databaseHandler.hasPermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase())) {
-                        databaseHandler.removePermission(target.getUniqueId().toString(), PermissionType.USER, args[3].toLowerCase());
+                    if (databaseHandler.hasPermission(target.getUniqueId().toString(),
+                            PermissionType.USER, args[3].toLowerCase())) {
+                        databaseHandler.removePermission(target.getUniqueId().toString(),
+                                PermissionType.USER, args[3].toLowerCase());
                         BungeeUpdater.updatePermissions(PermissionType.USER);
                         sendMessage(sender, "§7Die Permission §a" + args[3] + " §7wurde erfolgreich entfernt.", true);
                     }
@@ -216,8 +232,10 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
-                    if (!databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase())) {
-                        databaseHandler.addPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase());
+                    if (!databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(),
+                            PermissionType.GROUP, args[3].toLowerCase())) {
+                        databaseHandler.addPermission(Integer.valueOf(group.getGroupId()).toString(),
+                                PermissionType.GROUP, args[3].toLowerCase());
                         sendMessage(sender, "§aPermission wurde gesetzt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
@@ -230,8 +248,10 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
-                    if (databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase())) {
-                        databaseHandler.removePermission(Integer.valueOf(group.getGroupId()).toString(), PermissionType.GROUP, args[3].toLowerCase());
+                    if (databaseHandler.hasPermission(Integer.valueOf(group.getGroupId()).toString(),
+                            PermissionType.GROUP, args[3].toLowerCase())) {
+                        databaseHandler.removePermission(Integer.valueOf(group.getGroupId()).toString(),
+                                PermissionType.GROUP, args[3].toLowerCase());
                         sendMessage(sender, "§aPermission wurde entfernt.", true);
                         playerManager.getGroupManager().updatePermissions();
                         BungeeUpdater.updatePermissions(PermissionType.GROUP);
@@ -246,18 +266,23 @@ public class PermissionCommand extends Command {
                         sendMessage(sender, "§cDie Gruppe existiert nicht.", true);
                         return;
                     }
+                    String key = args[3].toLowerCase();
                     List<String> keys = Arrays.asList("name", "colorCode", "prefix", "parentGroup");
-                    if (keys.contains(args[3])) {
-                        if (args[3].equals("colorCode"))
-                            databaseHandler.updateGroup(group.getGroupId(), args[3], "§" + args[4].replace("&", ""));
+                    if (keys.contains(key)) {
+                        if (key.equals("colorcode"))
+                            databaseHandler.updateGroup(group.getGroupId(), "colorCode", "§" + args[4].
+                                    replace("&", ""));
+                        else if (key.equals("parentGroup"))
+                            databaseHandler.updateGroup(group.getGroupId(), "parentGroup", args[4]);
                         else
-                            databaseHandler.updateGroup(group.getGroupId(), args[3], args[4].replace("&", ""));
+                            databaseHandler.updateGroup(group.getGroupId(), key, args[4].replace("&",
+                                    ""));
                         playerManager.getGroupManager().updateGroups();
-                        sendMessage(sender, "§7Wert wurde geändert.", true);
+                        sendMessage(sender, "§7Wert wurde geaendert.", true);
                     } else {
-                        sendMessage(sender, "§cDas ist kein gültiger Key.", true);
-                        sendMessage(sender, "§cFolgende Keys sind möglich:", true);
-                        sendMessage(sender, "§cname, colorCode, prefix, parentGroup", true);
+                        sendMessage(sender, "§cDas ist kein gueltiger Key.", true);
+                        sendMessage(sender, "§cFolgende Keys sind gueltig:", true);
+                        sendMessage(sender, "§cname, colorCode, prefix und parentGroup", true);
                     }
                 }
             }
@@ -268,52 +293,71 @@ public class PermissionCommand extends Command {
                     try {
                         duration = Integer.parseInt(args[4]);
                     } catch (NumberFormatException exception) {
-                        exception.printStackTrace();
                         sendMessage(sender, "§cDie Dauer ist keine gültige Zahl.", true);
                         return;
                     }
                     TimeUnit timeUnit = TimeUnit.getByName(args[5]);
                     if (timeUnit == null) {
-                        sendMessage(sender, "§cDas ist keine gültige Zeiteinheit. Gültige Einheiten: ", true);
-                        StringBuilder builder = new StringBuilder(", ");
+                        sendMessage(sender, "§cDas ist keine gültige Zeiteinheit. Gültige Einheiten: ",
+                                true);
+                        StringBuilder builder = new StringBuilder();
                         for (TimeUnit unit : TimeUnit.values())
-                            builder.append(unit.getName());
+                            builder.append(unit.getName() + ", ");
                         sendMessage(sender, "§e" + builder.toString(), true);
-                    }
-                    String uuid = databaseHandler.getUuid(args[1]);
-                    PermissionGroup group = playerManager.getGroupManager().getGroup(args[3]);
-                    if (group == null) {
-                        sendMessage(sender, "§cGruppe existiert nicht.", true);
                         return;
                     }
-                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(UUID.fromString(uuid));
+                    UUID uuid = databaseHandler.getUuidByName(args[1]);
+                    PermissionGroup group;
+                    try {
+                        Integer groupId = Integer.parseInt(args[3]);
+                        group = playerManager.getGroupManager().getGroup(groupId);
+                    } catch (NumberFormatException exception) {
+                        group = playerManager.getGroupManager().getGroup(args[3]);
+                    }
+                    if (group == null) {
+                        sendMessage(sender, "§cGruppe §7" + args[3] + " §cexistiert nicht.", true);
+                        return;
+                    }
+                    Optional<PermissionPlayer> permissionPlayer = playerManager.getPlayer(uuid);
                     if (!permissionPlayer.isPresent())
-                        permissionPlayer = Optional.of(playerManager.loadPlayer(UUID.fromString(uuid), args[1], true));
+                        permissionPlayer = Optional.of(playerManager.loadPlayer(uuid, args[1], true));
                     if (permissionPlayer.isPresent()) {
-                        playerManager.setGroup(permissionPlayer.get(), group, duration, timeUnit);
+                        playerManager.setGroup(permissionPlayer.get(), group, duration, timeUnit, sender.getName(), true);
                         sendMessage(sender, "§aDie Gruppe von §e"
-                                + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.", true);
+                                        + args[1] + " §awurde auf " + group.getColorCode() + group.getName() + " §agesetzt.",
+                                true);
                     }
                 }
-            } else if (args[0].equalsIgnoreCase("addgroup")) {
-                int groupId = -1;
+            }
+        } else if (args.length == 7) {
+            if (args[0].equalsIgnoreCase("addgroup")) {
+                Integer groupId;
                 try {
                     groupId = Integer.parseInt(args[1]);
                 } catch (NumberFormatException exception) {
-                    sendMessage(sender, "§7Ist das eine Zahl? Näh oder?", true);
-                }
-                if (groupId == -1)
+                    sendMessage(sender, "§e" + args[1] + " ist keine gueltige Zahl!", true);
                     return;
+                }
+                Integer parentGroup;
+                try {
+                    parentGroup = Integer.parseInt(args[5]);
+                } catch (NumberFormatException exception) {
+                    parentGroup = null;
+                }
                 if (playerManager.getGroupManager().getGroup(groupId) == null) {
-                    databaseHandler.addGroup(Integer.parseInt(args[1]), args[2], "§" + args[3], args[4], Integer.parseInt(args[5]));
+                    databaseHandler.addGroup(groupId, args[2], "§" + args[3], args[4],
+                            parentGroup, Boolean.parseBoolean(args[6]));
                     playerManager.getGroupManager().updateGroups();
                     sendMessage(sender, "§7Du hast die Gruppe §e" + args[2] + " §7erstellt.", true);
                 } else {
-                    sendMessage(sender, "§7Diese Gruppe existiert nicht!", true);
+                    sendMessage(sender, "§7Diese GruppenId ist bereits vergeben!", true);
+                    sendMessage(sender, "§7Eine Uebersicht aller Gruppen findest du hier: /herliosperms groups.", true);
+                    sendMessage(sender, "§7Infos ueber die gewaelte GruppenId findest du hier: /herliosperms group " + groupId + " info.", true);
                 }
             }
         } else {
-            sendMessage(sender, "§c/heliosperms help", true);
+            sendMessage(sender, "§cCommand not found.", true);
+            sendMessage(sender, "§cUse '/heliosperms help' for more informations.", true);
         }
     }
 

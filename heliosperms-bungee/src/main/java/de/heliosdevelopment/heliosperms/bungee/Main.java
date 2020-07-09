@@ -1,12 +1,12 @@
 package de.heliosdevelopment.heliosperms.bungee;
 
-import de.heliosdevelopment.heliosperms.HeliosPerms;
+import de.heliosdevelopment.heliosperms.bungee.listener.PermissionListener;
+import de.heliosdevelopment.heliosperms.api.HeliosPerms;
 import de.heliosdevelopment.heliosperms.bungee.commands.PermissionCommand;
 import de.heliosdevelopment.heliosperms.bungee.listener.BungeeListener;
-import de.heliosdevelopment.heliosperms.bungee.listener.PermissionListener;
-import de.heliosdevelopment.heliosperms.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.manager.GroupManager;
-import de.heliosdevelopment.heliosperms.manager.PlayerManager;
+import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
+import de.heliosdevelopment.heliosperms.api.manager.GroupManager;
+import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
 import de.heliosdevelopment.sqlconnector.SQLClient;
 import de.heliosdevelopment.sqlconnector.SQLInfo;
 import de.heliosdevelopment.sqlconnector.util.SQLConfig;
@@ -27,10 +27,7 @@ public class Main extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
-        File folder = new File("plugins//HeliosPerms");
-        File file = new File(folder, "config.yml");
-        if (!folder.exists())
-            folder.mkdirs();
+        File file = new File(getDataFolder(), "config.yml");
         if (!file.exists())
             try {
                 file.createNewFile();
@@ -52,7 +49,7 @@ public class Main extends Plugin {
         administrator = cfg.getString("settings.administrator");
 
         try {
-            SQLConfig config = new SQLConfig("plugins//HeliosPerms//sql.json");
+            SQLConfig config = new SQLConfig(getDataFolder() + "//sql.json");
             SQLInfo sqlInfo = config.getSqlInfo();
             SQLClient client = new SQLClient(sqlInfo, "com.mysql.jdbc.Driver", "jdbc:mysql", 5);
             databaseHandler = new DatabaseHandler(client);
@@ -60,10 +57,10 @@ public class Main extends Plugin {
                 client.doShutdown();
                 System.out.println("[HeliosPerms] Could not connect to your mysql database.");
             }
-            GroupManager groupManager = new GroupManager(databaseHandler);
+            GroupManager groupManager = new GroupManager(databaseHandler, true);
             PlayerManager playerManager = new PlayerManager(databaseHandler, groupManager);
             new HeliosPerms(databaseHandler, playerManager, true);
-            ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager, databaseHandler));
+            ProxyServer.getInstance().getPluginManager().registerListener(this, new BungeeListener(playerManager));
             ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionListener(playerManager));
             getProxy().getPluginManager().registerCommand(this, new PermissionCommand(databaseHandler, playerManager));
             new ExpirationHandler(playerManager);
