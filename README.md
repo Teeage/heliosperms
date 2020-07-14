@@ -11,13 +11,13 @@ Solltest du ein eigenes Minecraft Netzwerk besitzen, kannst du dieses Plugin ger
 ## Hier kann die aktuellste Version heruntergeladen werden.
 
 ### Bungeecord Plugin:
-[heliosperms-bungee-1.8](uploads/7255be3a9e5fed4874bdd976deef34e3/heliosperms-bungee-1.8-jar-with-dependencies.jar)
+[heliosperms-bungee-1.0.0-SNAPSHOT](uploads/65d5072902464bdb1be6cabf3e4ef9e8/heliosperms-bungee-1.0.0-SNAPSHOT-jar-with-dependencies.jar)
 
 ### Spigot Bridge:
-[heliosperms-spigot-1.8](uploads/52588809b2f61c13e8229b4fdb89b7d2/heliosperms-spigot-1.8-jar-with-dependencies.jar)
+[heliosperms-spigot-1.0.0-SNAPSHOT](uploads/9579473184dab3e821b15e9e2e66fa39/heliosperms-spigot-1.0.0-SNAPSHOT-jar-with-dependencies.jar)
 
 ### Developer API:
-[heliosperms-api-1.8.jar](uploads/190bb6286c63f6354176c689dd9098b1/heliosperms-api-1.8.jar)
+[heliosperms-api-1.0.0-SNAPSHOT.jar](uploads/90a2d766c19936709dba6b7cfff28436/heliosperms-api-1.0.0-SNAPSHOT.jar)
 
 #### Documentation
 #### [JavaDocs](http://docs.teeage.de/heliosperms)
@@ -32,9 +32,9 @@ Solltest du ein eigenes Minecraft Netzwerk besitzen, kannst du dieses Plugin ger
 ```
 
 ```
-<dependency>/
-  <groupId>de.heliosdevelopment</groupId>/
-  <artifactId>heliosperms-api</artifactId>/
-  <version>1.8</version>/
+<dependency>
+  <groupId>de.heliosdevelopment</groupId>
+  <artifactId>heliosperms-api</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
