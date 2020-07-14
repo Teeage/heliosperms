@@ -5,24 +5,29 @@
     <parent>
         <artifactId>heliosperms</artifactId>
         <groupId>de.heliosdevelopment</groupId>
-        <version>1.8</version>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>heliosperms-api</artifactId>
 
-    <distributionManagement>
-        <repository>
-            <id>packagecloud-Teeage</id>
-            <url>packagecloud+https://packagecloud.io/Teeage/heliosdevelopment</url>
-        </repository>
-        <snapshotRepository>
-            <id>packagecloud-Teeage</id>
-            <url>packagecloud+https://packagecloud.io/Teeage/heliosdevelopment</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
