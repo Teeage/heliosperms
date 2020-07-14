@@ -1,11 +1,9 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java#apache-maven-with-a-settings-path
 
-name: Maven Package
+name: HeliosPerms builds
 
-on:
-  release:
-    types: [created]
+on: [create, push, pull_request]
 
 jobs:
   build:
@@ -22,9 +20,16 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn clean test package
+    
+    - name: Repackage with Maven
+      run: mvn package
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+    - uses: actions/upload-artifact@master
+      with:
+        name: HeliosPerms
+        path: temp/
       env:
         GITHUB_TOKEN: ${{ github.token }}
