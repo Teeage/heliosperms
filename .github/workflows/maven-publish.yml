@@ -4,7 +4,8 @@
 name: HeliosPerms builds
 
 on: [create, push, pull_request]
-
+env:
+  GITHUB_TOKEN: ${{ github.token }}
 jobs:
   build:
 
@@ -21,12 +22,8 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package
-
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      
     - uses: actions/upload-artifact@master
       with:
         name: HeliosPerms
         path: temp/
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
