@@ -1,10 +1,11 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java#apache-maven-with-a-settings-path
 
-name: HeliosPerms builds
+name: Maven CI
 
 on: [create, push, pull_request]
-
+env:
+  GITHUB_TOKEN: ${{ github.token }}
 jobs:
   build:
 
@@ -21,12 +22,11 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package
-
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+    - uses: jwgmeligmeyling/pmd-github-action@v1.2
+      with:
+        path: '**/pmd.xml'
+  
     - uses: actions/upload-artifact@master
       with:
         name: HeliosPerms
         path: temp/
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
