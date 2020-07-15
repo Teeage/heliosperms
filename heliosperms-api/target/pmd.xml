@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
+    version="6.21.0" timestamp="2020-07-14T19:18:03.463">
+<file name="C:\Development\Workspace\HeliosPerms\heliosperms-api\src\main\java\de\heliosdevelopment\heliosperms\api\manager\GroupManager.java">
+<violation beginline="3" endline="3" begincolumn="1" endcolumn="56" rule="UnusedImports" ruleset="Best Practices" package="de.heliosdevelopment.heliosperms.api.manager" class="GroupManager" externalInfoUrl="https://pmd.github.io/pmd-6.21.0/pmd_rules_java_bestpractices.html#unusedimports" priority="4">
+Avoid unused imports such as 'de.heliosdevelopment.heliosperms.api.HeliosPerms'
+</violation>
+</file>
+</pmd>

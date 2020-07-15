@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
+    version="6.21.0" timestamp="2020-07-14T19:18:06.978">
+<file name="C:\Development\Workspace\HeliosPerms\heliosperms-bungee\src\main\java\de\heliosdevelopment\heliosperms\bungee\commands\PermissionCommand.java">
+<violation beginline="125" endline="133" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Design" package="de.heliosdevelopment.heliosperms.bungee.commands" class="PermissionCommand" method="execute" externalInfoUrl="https://pmd.github.io/pmd-6.21.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="260" endline="284" begincolumn="17" endcolumn="17" rule="CollapsibleIfStatements" ruleset="Design" package="de.heliosdevelopment.heliosperms.bungee.commands" class="PermissionCommand" method="execute" externalInfoUrl="https://pmd.github.io/pmd-6.21.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+<violation beginline="288" endline="327" begincolumn="17" endcolumn="17" rule="CollapsibleIfStatements" ruleset="Design" package="de.heliosdevelopment.heliosperms.bungee.commands" class="PermissionCommand" method="execute" externalInfoUrl="https://pmd.github.io/pmd-6.21.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+</file>
+<file name="C:\Development\Workspace\HeliosPerms\heliosperms-bungee\src\main\java\de\heliosdevelopment\heliosperms\bungee\listener\PermissionListener.java">
+<violation beginline="25" endline="26" begincolumn="17" endcolumn="49" rule="CollapsibleIfStatements" ruleset="Design" package="de.heliosdevelopment.heliosperms.bungee.listener" class="PermissionListener" method="onPermissionCheck" externalInfoUrl="https://pmd.github.io/pmd-6.21.0/pmd_rules_java_design.html#collapsibleifstatements" priority="3">
+These nested if statements could be combined
+</violation>
+</file>
+</pmd>

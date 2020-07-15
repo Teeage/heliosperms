@@ -1,0 +1,4 @@
+name: HeliosPerms-spigot-bridge
+version: 1.0.0-SNAPSHOT
+author: Teeage
+main: de.heliosdevelopment.heliosperms.spigot.Main

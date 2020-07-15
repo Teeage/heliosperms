@@ -1,0 +1,6 @@
+de\heliosdevelopment\heliosperms\bungee\Main.class
+de\heliosdevelopment\heliosperms\bungee\commands\PermissionCommand.class
+de\heliosdevelopment\heliosperms\bungee\listener\PermissionListener.class
+de\heliosdevelopment\heliosperms\bungee\listener\BungeeListener.class
+de\heliosdevelopment\heliosperms\bungee\ExpirationHandler.class
+de\heliosdevelopment\heliosperms\bungee\BungeeUpdater.class
