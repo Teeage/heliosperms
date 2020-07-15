@@ -5,9 +5,9 @@ import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.api.utils.TimeUnit;
 import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class PlayerManager {
@@ -109,21 +109,16 @@ public class PlayerManager {
         }
         databaseHandler.updateUser(permissionPlayer.getUuid(), permissionPlayer.getName(),
                 permissionPlayer.getPermissionGroup().getGroupId(), permissionPlayer.getExpiration());
-        if (bungee)
-            sendUpdateToSpigot(permissionPlayer.getUuid(), oldGroupId, permissionGroup.getGroupId());
-    }
-
-    /**
-     * Send an group update to all spigot servers
-     *
-     * @param uuid
-     * @param oldGroupId
-     * @param newGroupId
-     */
-    public void sendUpdateToSpigot(UUID uuid, int oldGroupId, int newGroupId) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
-        if (proxiedPlayer != null) {
-            BungeeUpdater.updateGroup(uuid.toString(), oldGroupId, newGroupId);
+        if (bungee) {
+            try {
+                Class<?> bungeeUpdater = Class.forName("de.heliosdevelopment.heliosperms.bungee");
+                Method method = bungeeUpdater.getDeclaredMethod("updateGroup",
+                        String.class, Integer.class, Integer.class);
+                method.invoke(null, permissionPlayer.getUuid().toString(),
+                        oldGroupId, permissionGroup.getGroupId());
+            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 

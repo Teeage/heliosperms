@@ -2,7 +2,7 @@ package de.heliosdevelopment.heliosperms.bungee.commands;
 
 import de.heliosdevelopment.heliosperms.bungee.Main;
 import de.heliosdevelopment.heliosperms.api.database.DatabaseHandler;
-import de.heliosdevelopment.heliosperms.api.manager.BungeeUpdater;
+import de.heliosdevelopment.heliosperms.bungee.BungeeUpdater;
 import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;

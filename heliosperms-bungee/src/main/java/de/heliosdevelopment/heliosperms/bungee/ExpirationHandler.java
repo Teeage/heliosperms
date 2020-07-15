@@ -1,6 +1,5 @@
 package de.heliosdevelopment.heliosperms.bungee;
 
-import de.heliosdevelopment.heliosperms.api.manager.BungeeUpdater;
 import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
