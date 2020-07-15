@@ -22,8 +22,9 @@ jobs:
 
     - name: Build with Maven
       run: mvn clean package
-    - name: Push PMD report
-      uses: jwgmeligmeyling/pmd-github-action@v1.2
+    - uses: jwgmeligmeyling/pmd-github-action@v1.2
+      with:
+        path: '**/pmd.xml'
   
     - uses: actions/upload-artifact@master
       with:
