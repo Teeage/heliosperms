@@ -10,7 +10,8 @@ public class GroupChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private final UUID uuid;
-    private final int oldGroupId, newGroupId;
+    private final int oldGroupId;
+    private final int newGroupId;
 
     public GroupChangeEvent(UUID uuid, int oldGroupId, int newGroupId) {
         this.uuid = uuid;

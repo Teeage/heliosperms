@@ -4,7 +4,7 @@ package de.heliosdevelopment.heliosperms.spigot.listener;
 import de.heliosdevelopment.heliosperms.spigot.events.GroupChangeEvent;
 import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.spigot.Main;
-import de.heliosdevelopment.heliosperms.api.utils.Permissible;
+import de.heliosdevelopment.heliosperms.spigot.Permissible;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionGroup;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
 import org.bukkit.Bukkit;
@@ -15,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -61,14 +60,9 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerKick(PlayerKickEvent event) {
-        playerManager.unloadPlayer(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
-    public void onChat(AsyncPlayerChatEvent e) {
+    public void onChat(AsyncPlayerChatEvent event) {
         if (!coloredChat) return;
-        Player player = e.getPlayer();
+        Player player = event.getPlayer();
         Optional<PermissionPlayer> permissionPlayerOptional = playerManager.getPlayer(player.getUniqueId());
         if (!permissionPlayerOptional.isPresent()) return;
         PermissionGroup group = permissionPlayerOptional.get().getPermissionGroup();
@@ -83,9 +77,9 @@ public class PlayerListener implements Listener {
             format = format.replace("%name%", group.getName());
         if (format.contains("%player%"))
             format = format.replace("%player%", player.getName());
-        e.setFormat(format + " %2$s");
+        event.setFormat(format + " %2$s");
         if (player.hasPermission("heliosperms.chatcolor"))
-            e.setMessage(e.getMessage().replace("&", "§"));
+            event.setMessage(event.getMessage().replace("&", "§"));
 
     }
 

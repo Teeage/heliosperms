@@ -1,6 +1,7 @@
-package de.heliosdevelopment.heliosperms.api.utils;
+package de.heliosdevelopment.heliosperms.spigot;
 
 
+import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;

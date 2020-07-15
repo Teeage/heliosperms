@@ -6,7 +6,7 @@ import de.heliosdevelopment.heliosperms.api.HeliosPerms;
 import de.heliosdevelopment.heliosperms.spigot.events.GroupChangeEvent;
 import de.heliosdevelopment.heliosperms.api.manager.PlayerManager;
 import de.heliosdevelopment.heliosperms.spigot.Main;
-import de.heliosdevelopment.heliosperms.api.utils.Permissible;
+import de.heliosdevelopment.heliosperms.spigot.Permissible;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionPlayer;
 import de.heliosdevelopment.heliosperms.api.utils.PermissionType;
 import org.bukkit.Bukkit;
@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,14 +28,14 @@ public class MessageListener implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("HeliosPerms")) {
+        if (!"HeliosPerms".equals(channel)) {
             return;
         }
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subchannel = in.readUTF();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-            if (subchannel.equals("UpdatePermissions")) {
-                PermissionType type = PermissionType.valueOf(in.readUTF().toUpperCase());
+            if ("UpdatePermissions".equals(subchannel)) {
+                PermissionType type = PermissionType.valueOf(in.readUTF().toUpperCase(Locale.ENGLISH));
                 if (type == PermissionType.GROUP)
                     HeliosPerms.getInstance().getGroupManager().updatePermissions();
                 else
@@ -53,9 +54,8 @@ public class MessageListener implements PluginMessageListener {
                         e.printStackTrace();
                     }
                 }
-            } else if (subchannel.equals("UpdateGroup")) {
-                String uuid = in.readUTF();
-                Player target = Bukkit.getPlayer(UUID.fromString(uuid));
+            } else if ("UpdateGroup".equals(subchannel)) {
+                Player target = Bukkit.getPlayer(UUID.fromString(in.readUTF()));
                 String oldGroupId = in.readUTF();
                 String newGroupId = in.readUTF();
                 if (target != null) {
