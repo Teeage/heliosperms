@@ -9,4 +9,3 @@ Das Plugin HeliosPerms ist ein Permission System für Bungeecord Netzwerke, welc
 Zusätzlich können individuelle Berechtigungen für einzelne Nutzer verteilt werden.
 Desweiteren verfügt das System über veränderbare Tablist Prefixe und ein Chat Format.
 
-Solltest du ein eigenes Minecraft Netzwerk besitzen, kannst du dieses Plugin gerne verwenden.
