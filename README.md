@@ -1,4 +1,4 @@
-![Build Status](https://github.com/Teeage/heliosperms/workflows/HeliosPerms%20builds/badge.svg)
+![Build Status](https://github.com/Teeage/heliosperms/actions/workflows/maven-publish.yml/badge.svg)
 ![GitHub license](https://img.shields.io/github/license/Teeage/heliosperms)
 ![Issues](https://img.shields.io/github/issues/Teeage/heliosperms)
 ![Downloads](https://img.shields.io/github/downloads/Teeage/heliosperms/total)
